@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next";
-import { Toaster } from "@/components/ui/sonner";
 import { routing } from "@/modules/i18n/routing";
 import { TRPCReactProvider } from "@/trpc/client";
-import "../globals.css";
+import "@/styles/globals.css";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -20,8 +20,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Deck Pilot",
-	description: "Your comprehensive platform for managing projects and teams",
+	title: "Better SaaS Boilerplate",
+	description:
+		"Your comprehensive platform for managing users and organizations",
+};
+
+export const viewport: Viewport = {
+	initialScale: 1,
+	viewportFit: "cover",
+	width: "device-width",
 };
 
 type Props = {
@@ -46,12 +53,13 @@ export default async function LocaleLayout({ children, params }: Props) {
 	return (
 		<NuqsAdapter>
 			<TRPCReactProvider>
-				<html lang={locale}>
+				<html lang={locale} suppressHydrationWarning>
 					<body
-						className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+						className={`${geistSans.variable} ${geistMono.variable} flex min-h-svh flex-col antialiased`}
 					>
-						<Toaster />
-						<NextIntlClientProvider>{children}</NextIntlClientProvider>
+						<NextIntlClientProvider>
+							<Providers>{children}</Providers>
+						</NextIntlClientProvider>
 					</body>
 				</html>
 			</TRPCReactProvider>

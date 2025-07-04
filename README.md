@@ -17,12 +17,10 @@ A comprehensive, production-ready Next.js boilerplate built with the latest and 
 
 ### Type-Safe API Layer
 
-- **[oRPC](https://orpc.unnoq.com)** - Type-safe API handling with automatic client generation
+- **[tRPC](https://trpc.io/)** - Type-safe API handling with automatic client generation
   - End-to-end type safety from server to client
   - Automatic TypeScript client generation
   - Built-in request/response validation
-  - OpenAPI specification generation
-  - **Better Auth Integration** - Public and private procedure abstractions
 
 ### Database & ORM
 
@@ -39,7 +37,11 @@ A comprehensive, production-ready Next.js boilerplate built with the latest and 
   - Organizations, teams, and role-based permissions
   - Session management
   - Magic links and passkeys support
-  - **Fully Integrated with oRPC** - Type-safe authentication procedures
+
+- **[@daveyplate/better-auth-ui](https://better-auth-ui.com)** - Ready-to-use shadcn/ui styled authentication components
+  - Pre-built sign-in, sign-up, and password reset forms
+  - Fully responsive UI components with dark/light mode support
+  - Seamless integration with Better Auth
 
 ### Session Storage & Caching
 
@@ -88,7 +90,9 @@ A comprehensive, production-ready Next.js boilerplate built with the latest and 
   - Social authentication (GitHub, Google)
   - Session management with secure cookies
   - Type-safe authentication context throughout the app
-  - **oRPC Integration** - Authentication-aware procedures
+- **Pre-built UI Components**
+  - Uses `@daveyplate/better-auth-ui` for ready-to-use authentication forms and components
+- **tRPC Integration** - Authentication-aware procedures
 
 - **🗄️ Database Ready**
   - PostgreSQL with Neon
@@ -202,15 +206,6 @@ A comprehensive, production-ready Next.js boilerplate built with the latest and 
 
     Open [http://localhost:3000](http://localhost:3000) to see your application.
 
-6. **Test Authentication Integration**
-
-   The Better Auth + oRPC integration provides these endpoints:
-   - **GET** `/api/rpc/auth.getSession` - Get current session (public)
-   - **POST** `/api/rpc/auth.signIn` - Sign in with email/password
-   - **POST** `/api/rpc/auth.signUp` - Register new account
-   - **POST** `/api/rpc/auth.signOut` - Sign out (requires authentication)
-   - **GET** `/api/rpc/auth.getProfile` - Get user profile (requires authentication)
-
 ## 📁 Project Structure
 
 This boilerplate follows a **hexagonal (modular) architecture** with **Better Auth integration** that promotes separation of concerns, maintainability, and scalability.
@@ -227,44 +222,37 @@ This boilerplate follows a **hexagonal (modular) architecture** with **Better Au
 
 ```bash
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── [locale]/           # Internationalized routes
-│   │   │   ├── (private)/      # 🔒 Private/Protected Route Group
-│   │   │   │   ├── layout.tsx  # Authentication wrapper + sidebar
-│   │   │   │   └── dashboard/  # Protected dashboard section
-│   │   │   ├── auth/           # 🔓 Public 
-│   │   │   ├── layout.tsx      # Locale-specific layout
-│   │   │   └── page.tsx        # Localized home page
-│   │   ├── api/                # API routes
-│   │   │   ├── auth/           # Better Auth endpoints
-│   │   │   │   └── [...all]/route.ts
-│   │   │   └── rpc/            # oRPC endpoints
-│   │   │       └── [[...rest]]/route.ts
-│   │   └── globals.css         # Global styles
-│   ├── lib/                    # Core configurations
-│   │   ├── auth.ts             # Better Auth server configuration
-│   │   ├── auth-client.ts      # Better Auth client configuration
-│   │   ├── env.ts              # Environment validation with T3 Env
-│   │   ├── orpc-client.ts      # oRPC client configuration
-│   │   ├── orpc-server.ts      # Server-side oRPC client
-│   │   ├── utils.ts            # Shared utilities
-│   │   └── db/                 # Database configuration
-│   │       └── schema.ts       # Drizzle schema for Better Auth
-│   ├── orpc/                   # oRPC exports and documentation
-│   │   └── router.ts           # oRPC router with auth procedures
-│   ├── components/             # Shared UI components
-│   │   └── ui/                 # shadcn/ui components
-│   ├── emails/                 # Emails configuration
-│   │   └── templates/          # React Email templates
-│   ├── hooks/                  # Shared React hooks
-│   ├── i18n/                   # Internationalization configuration
-│   ├── types/                  # Global TypeScript types
-│   └── messages/               # Translation files
-├── middleware.ts               # next-intl locale detection and routing
-├── next.config.js              # Next.js configuration with i18n
-├── drizzle.config.ts           # Drizzle ORM configuration
-├── components.json             # Shadcn/ui configuration
-└── package.json                # Dependencies and scripts
+│   ├── app/                 # Next.js App Router
+│   │   ├── [locale]/                 # Internationalized routes
+│   │   │   ├── (private)/            # 🔒 Private/Protected Route Group
+│   │   │   │   ├── layout.tsx        # Authentication wrapper + sidebar
+│   │   │   │   └── dashboard/        # Protected dashboard section
+│   │   │   │       └── page.tsx      # Main dashboard page
+│   │   │   └── auth/                 # 🔓 Public 
+│   │   ├── api/             # API routes
+│   │   │   ├── auth/        # Better Auth endpoints
+│   │   │   └── trpc/         # tRPC endpoints
+│   │   └── globals.css      # Global styles
+│   ├── lib/                 # Core configurations
+│   │   ├── auth.ts          # Better Auth server configuration
+│   │   ├── auth-client.ts   # Better Auth client configuration
+│   │   ├── env.ts           # Environment validation (CENTRALIZED)
+│   │   └── db/              # Database configuration
+│   ├── trpc/                # tRPC exports and documentation
+│   ├── components/          # Shared UI components
+│   ├── hooks/               # Shared React hooks
+│   ├── messages/            # Translation files
+│   ├── modules/
+│   │   ├── {domain}/
+│   │   │   ├── server/
+│   │   │   │   ├── params.ts  # NUQS Query params definitions
+│   │   │   │   └── router.ts  # tRPC procedures router
+│   │   │   ├── ui/
+│   │   │   │   ├── components/  # Reusable components
+│   │   │   │   └── views/       # Page-level components
+│   │   │   ├── lib/             # Business logic, utils
+│   │   │   ├── hooks/           # Custom React hooks
+│   │   │   └── types.ts         # TypeScript type definitions
 ```
 
 ## 🔧 Key Configuration Files
