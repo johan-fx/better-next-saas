@@ -1,0 +1,274 @@
+---
+description: These rules describe the project module development patterns. 
+globs: 
+alwaysApply: false
+---
+# Module Development Patterns & Guidelines
+
+## Project Structure & Module Organization
+
+### Module Architecture
+
+- Organize code by feature/domain modules under `src/modules/` and `src/app/[locale]`
+- Each module should have clear separation: `ui/components/`, `ui/views/`, `lib/`, `types/`
+- Every `page.tsx` inside the `src/app/[locale]/{domain}/*` must contain only `views` from `src/modules/{domain}/ui/views`
+- Every `page.tsx` inside the `src/app/[locale]/(private)/{domain}/*` must contain only `views` from `src/modules/{domain}/ui/views`
+- **IMPORTANT:** Pages in `src/app/[locale]/(private)/**` are automatically protected by the layout authentication check
+- Reference example: [page.tsx](mdc:src/app/[locale]/auth/sign-up/page.tsx) [signup-view.tsx](mdc:src/modules/auth/ui/views/signup-view.tsx) [signup-form.tsx](mdc:src/modules/auth/ui/components/signup-form.tsx)
+
+### Component Structure
+
+```bash
+src/modules/{domain}/
+├── ui/
+│   ├── components/     # Reusable components
+│   └── views/         # Page-level components
+├── lib/               # Business logic, utils
+├── types/            # TypeScript type definitions
+└── hooks/            # Custom React hooks
+
+src/app/[locale]/
+├── (private)/         # 🔒 Protected routes - authentication handled by layout
+│   ├── {domain}/      # Feature-specific protected pages
+│   │   └── page.tsx   # Must use views from src/modules/{domain}/ui/views
+│   └── layout.tsx     # 🔒 Handles authentication for ALL private pages
+└── {domain}/          # Public routes
+    └── page.tsx       # Can use views from src/modules/{domain}/ui/views
+```
+
+## Authentication Requirements (Better Auth)
+
+### Layout-Based Authentication Pattern
+
+**The project uses a centralized authentication approach:**
+
+- `src/app/[locale]/(private)/layout.tsx` handles authentication for ALL private pages
+- Individual pages under `(private)` do NOT need authentication checks
+- The layout redirects unauthenticated users to sign-in automatically
+
+### Private Layout Authentication (src/app/[locale]/(private)/layout.tsx)
+
+```typescript
+export default async function PrivateLayout({ children, params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  // 🔒 CENTRALIZED: Check authentication for all private pages
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // Redirect to sign-in if user is not authenticated
+  if (!session?.user) {
+    redirect(`/${locale}/auth/sign-in`);
+  }
+
+  return (
+    <SidebarProvider>
+      <MainSidebar />
+      <main className="flex flex-col h-screen w-screen bg-muted">
+        {children}
+      </main>
+      <Toaster />
+    </SidebarProvider>
+  );
+}
+```
+
+### Private Page Pattern (Clean & Simple)
+
+```typescript
+// ✅ DO: Private pages are automatically protected by layout
+export default async function PrivatePage({ params }: { params: { locale: string } }) {
+  // No authentication check needed - layout handles it
+  // User is guaranteed to be authenticated here
+  
+  return <YourDomainView />
+}
+```
+
+### Authentication Best Practices
+
+- **NEVER** add authentication checks to individual pages under `(private)`
+- **ALWAYS** rely on the layout authentication for private pages
+- **ONLY** add custom authentication logic if you need specific role-based access
+- Use the layout pattern for consistent authentication across all private pages
+
+### Client-Side Authentication (for components)
+
+```typescript
+'use client'
+import { useSession } from '@/lib/auth-client'
+
+export function ClientComponent() {
+  const { data: session, isPending } = useSession()
+  
+  if (isPending) return <div>Loading...</div>
+  if (!session) return <div>Not authenticated</div>
+  
+  return <div>Welcome, {session.user.name}</div>
+}
+```
+
+## Form Development Standards
+
+### 1. Validation with Zod + Translations
+
+- **ALWAYS** use Zod for form validation schemas
+- **ALWAYS** integrate translations directly into schema for consistent error messages
+- Create schema factory functions that accept translation function
+
+```typescript
+const createSignupSchema = (t: (key: string) => string) => {
+  return z.object({
+    email: z.string()
+      .min(1, { message: t("emailRequired") })
+      .email({ message: t("emailInvalid") }),
+    password: z.string()
+      .min(8, { message: t("passwordTooShort") })
+  }).refine(/* custom validation */, {
+    message: t("customErrorMessage"),
+    path: ["fieldName"]
+  });
+};
+```
+
+### 2. React Hook Form Integration
+
+- **ALWAYS** use React Hook Form with `zodResolver`
+- Use `useForm<SchemaType>()` with proper TypeScript inference
+- Create form instance and pass to shadcn Form provider
+
+```typescript
+const form = useForm<SignupFormData>({
+  resolver: zodResolver(signupSchema),
+  defaultValues: { /* ... */ }
+});
+```
+
+### 3. shadcn/ui Form Components Suite
+
+- **ALWAYS** use the complete shadcn Form components suite:
+  - `<Form {...form}>` - Provider wrapper
+  - `<FormField>` - Individual field wrapper with render props
+  - `<FormItem>` - Field container with consistent spacing
+  - `<FormLabel>` - Accessible labels
+  - `<FormControl>` - Input wrapper with aria attributes
+  - `<FormMessage>` - Automatic error display
+  - `<FormDescription>` - Help text and hints
+
+```typescript
+<FormField
+  control={form.control}
+  name="fieldName"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>{t("label")}</FormLabel>
+      <FormControl>
+        <Input {...field} />
+      </FormControl>
+      <FormDescription>{t("helpText")}</FormDescription>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+## Translation Patterns (next-intl)
+
+### Translation Integration
+
+- Use `useTranslations("Domain")` hook for component translations
+- Create translation schema factory functions for consistent error messages
+- Use semantic translation keys: `"emailRequired"`, `"passwordTooShort"`
+
+### Translation Best Practices
+
+- Group translations by domain/module
+- Use descriptive keys that indicate the UI element and context
+- For optional fields: `{t("fieldName")} <span className="text-muted-foreground">({t("optional")})</span>`
+
+## Component Development Guidelines
+
+### TypeScript Patterns
+
+- **ALWAYS** use proper TypeScript interfaces for props
+- Use Zod schema type inference: `type FormData = z.infer<typeof schema>`
+- Maintain strict typing throughout component hierarchy
+
+### UI/UX Patterns
+
+- Use consistent spacing: `className="space-y-6"` for forms
+- Implement loading states with proper disabled attributes
+- Use shadcn design tokens: `text-muted-foreground`, `text-destructive`
+- Implement accessibility: proper ARIA attributes, screen reader support
+
+### State Management
+
+- Avoid manual state for form fields - let React Hook Form handle it
+- Use controlled components sparingly (e.g., password visibility toggles)
+- Leverage form's built-in validation and error states
+
+## Authentication Module Patterns
+
+### Form Security
+
+- Implement password visibility toggles with eye icons
+- Use proper input types: `type="email"`, `type="password"`
+- Implement client-side validation before submission
+- Handle async submission with proper error handling
+
+### Component Props Interface
+
+```typescript
+interface AuthFormProps {
+  onSubmit: (data: FormData) => Promise<void>;
+  isLoading: boolean;
+}
+```
+
+## Error Handling & Validation
+
+### Validation Strategy
+
+- Schema-first validation with Zod
+- Real-time validation feedback
+- Localized error messages
+- Field-level and form-level validation
+
+### Error Display
+
+- Use `<FormMessage />` for automatic error display
+- Errors appear below their respective fields
+- Use semantic error paths for custom validations (e.g., password confirmation)
+
+## Code Quality Standards
+
+### Comments & Documentation
+
+- **ALWAYS** include JSDoc comments for components explaining their purpose
+- Document validation rules and their reasoning
+- Include usage examples in complex components
+- Explain business logic and custom validation rules
+
+### Clean Code Principles
+
+- Keep components focused and single-purpose
+- Extract reusable patterns into hooks or utilities
+- Use descriptive variable and function names
+- Maintain consistent code formatting and structure
+
+## Performance Considerations
+
+### React Hook Form Benefits
+
+- Uncontrolled components reduce re-renders
+- Built-in validation optimization
+- Efficient form state management
+- Minimal bundle size impact
+
+### Component Optimization
+
+- Avoid inline object/function creation in render
+
+This rule set ensures consistent, maintainable, and user-friendly form development across all modules in the application.

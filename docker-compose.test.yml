@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  # MailDev service for email testing
+  maildev:
+    image: maildev/maildev:latest
+    container_name: deck-pilot-maildev
+    ports:
+      - "1025:1025" # SMTP port
+      - "1080:1080" # Web interface port
+    command: bin/maildev --web 1080 --smtp 1025 --hide-extensions STARTTLS
+    environment:
+      - MAILDEV_WEB_USER=test
+      - MAILDEV_WEB_PASS=test
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1080"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - test-network
+
+  # Optional: Database service for complete E2E testing
+  # Uncomment if you need a separate test database
+  # postgres-test:
+  #   image: postgres:15
+  #   container_name: deck-pilot-test-db
+  #   environment:
+  #     POSTGRES_DB: deckpilot_test
+  #     POSTGRES_USER: testuser
+  #     POSTGRES_PASSWORD: testpass
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - postgres_test_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U testuser -d deckpilot_test"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - test-network
+
+networks:
+  test-network:
+    driver: bridge
+# volumes:
+#   postgres_test_data:

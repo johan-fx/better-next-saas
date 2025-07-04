@@ -1,0 +1,571 @@
+# Product Requirements Document: User, Organization & Permissions Management System
+
+## Overview
+
+This PRD outlines the implementation of a comprehensive user, organization, and permissions management system for the deck-pilot application. The system builds on the existing better-auth foundation to provide enterprise-grade multi-tenancy, role-based access control (RBAC), and user management capabilities.
+
+**Current Foundation:**
+- ✅ Better-auth with email/password + social authentication
+- ✅ Organization plugin with basic member management
+- ✅ Custom roles defined (member, admin, owner, projectManager, finance)
+- ✅ Database schema with users, organizations, members, invitations tables
+- ✅ Email system with verification and invitation templates
+- ✅ User preferences system
+
+**What We're Building:**
+A complete management system that provides user administration, organization lifecycle management, granular permissions, user profiles, and enterprise features like audit logging and advanced security.
+
+---
+
+## Core Features
+
+### 1. User Management System
+**Purpose:** Complete user lifecycle management with admin controls
+
+**Features:**
+- **User Administration Dashboard:** Central interface for viewing, searching, and managing all users
+- **User Profile Management:** Extended user profiles with personal information, preferences, and settings
+- **User Status Management:** Activate, deactivate, suspend, and ban users with reason tracking
+- **User Search & Filtering:** Advanced search by email, name, role, organization, status, join date
+- **User Activity Monitoring:** Track user login activity, session management, device tracking
+
+### 2. Organization Management System
+**Purpose:** Complete organization lifecycle with multi-tenancy support
+
+**Features:**
+- **Organization Creation Wizard:** Step-by-step organization setup with branding and configuration
+- **Organization Settings:** Logo, branding, domain configuration for SSO, billing information
+- **Organization Dashboard:** Analytics, member overview, activity feed, usage metrics
+- **Multi-Organization Support:** Users can belong to multiple organizations with different roles
+- **Organization Deletion:** Secure deletion with data retention policies
+
+### 3. Advanced Permission Management
+**Purpose:** Granular role-based access control with custom permissions
+
+**Features:**
+- **Role Management Interface:** Create, edit, delete custom roles with permission matrix
+- **Permission Templates:** Pre-built permission sets for common use cases
+- **Resource-Level Permissions:** Fine-grained control over projects and teams
+- **Permission Inheritance:** Organization-level permissions with project-level overrides
+- **Permission Auditing:** Track permission changes and access attempts
+- **Custom Resource Types:** Add new resource types and permissions dynamically
+
+### 4. Member & Invitation Management
+**Purpose:** Streamlined member onboarding and management
+
+**Features:**
+- **Advanced Invitation System:** Bulk invitations, custom invitation messages, expiration management
+- **Member Directory:** Searchable member list with roles, teams, contact information
+- **Role Assignment:** Drag-and-drop role management, temporary role assignments
+- **Member Analytics:** Member activity, productivity metrics, engagement tracking
+- **Teams Organization:** Group members by teams with team-level permissions
+- **Member Offboarding:** Secure member removal with data transfer and access revocation
+
+### 5. Security & Compliance
+**Purpose:** Enterprise-grade security and compliance features
+
+**Features:**
+- **Two-Factor Authentication (2FA):** TOTP and backup codes
+- **Single Sign-On (SSO):** SAML, OAuth integration for enterprise identity providers
+- **Session Management:** Force logout, session timeout, concurrent session limits
+- **Audit Logging:** Complete audit trail of user actions, permission changes, data access
+- **Compliance Reports:** GDPR, SOC2, HIPAA compliance reporting
+- **Security Policies:** Password policies, login attempt limits, IP restrictions
+
+---
+
+## User Experience
+
+### User Personas
+
+**1. Super Admin**
+- **Profile:** Platform administrator with full system access
+- **Goals:** Manage all users and organizations, monitor platform health, configure security policies
+- **Key Flows:** User management, organization oversight, security configuration, compliance reporting
+
+**2. Organization Owner**
+- **Profile:** Business owner or senior executive
+- **Goals:** Manage organization settings, oversee member activity, control access to sensitive data
+- **Key Flows:** Organization setup, member management, billing management (via Stripe), security configuration
+
+**3. Organization Admin**
+- **Profile:** Team lead or manager
+- **Goals:** Manage team members, assign roles, monitor project activity
+- **Key Flows:** Member invitation, role assignment, project management, team coordination
+
+**4. Organization Member**
+- **Profile:** Regular team member or employee
+- **Goals:** Access assigned resources, collaborate with team, manage personal profile
+- **Key Flows:** Profile management, resource access, collaboration, preference setting
+
+**5. Guest/Contractor**
+- **Profile:** External collaborator with limited access
+- **Goals:** Access specific projects or resources, collaborate on assigned tasks
+- **Key Flows:** Limited resource access, temporary collaboration, project-specific workflows
+
+### Key User Flows
+
+**1. Organization Creation Flow**
+1. User clicks "Create Organization"
+2. Organization setup wizard with name, slug, branding
+3. Configure organization settings and preferences
+4. Set up billing and subscription via Stripe (if applicable)
+5. Invite initial team members
+6. Organization dashboard overview
+
+**2. Member Invitation Flow**
+1. Admin navigates to member management
+2. Bulk or individual invitation with role selection
+3. Custom invitation message and expiration setting
+4. Email sent with invitation link
+5. Invitee accepts and completes profile
+6. Automatic role assignment and access provisioning
+
+**3. Permission Management Flow**
+1. Admin accesses role management interface
+2. Select role to modify or create new role
+3. Permission matrix with resource/action combinations
+4. Preview permission impact and affected users
+5. Save changes with audit trail
+6. Notify affected users of permission changes
+
+**4. User Profile Management Flow**
+1. User accesses profile settings
+2. Personal information, contact details, preferences
+3. Security settings (2FA, sessions, password)
+4. Organization memberships and role overview
+5. Activity history and audit log
+6. Account deletion or data export options
+
+---
+
+## Technical Architecture
+
+### Module Architecture (Hexagonal Pattern)
+Following the established hexagonal architecture with feature-based modules:
+
+```
+/src/modules/
+├── admin/
+│   ├── ui/
+│   │   ├── components/
+│   │   │   ├── user-table.tsx
+│   │   │   ├── user-filters.tsx
+│   │   │   ├── user-bulk-actions.tsx
+│   │   │   ├── user-status-badge.tsx
+│   │   │   ├── organization-card.tsx
+│   │   │   ├── role-matrix.tsx
+│   │   │   ├── permission-builder.tsx
+│   │   │   └── role-templates.tsx
+│   │   └── views/
+│   │       ├── user-management-view.tsx
+│   │       ├── organization-management-view.tsx
+│   │       ├── permissions-management-view.tsx
+│   │       └── admin-dashboard-view.tsx
+│   ├── lib/
+│   │   ├── user-management.ts
+│   │   ├── organization-management.ts
+│   │   ├── permissions.ts
+│   │   └── audit-logger.ts
+│   ├── types/
+│   │   ├── user.ts
+│   │   ├── organization.ts
+│   │   └── permissions.ts
+│   ├── hooks/
+│   │   ├── use-user-management.ts
+│   │   ├── use-organization-management.ts
+│   │   └── use-permissions.ts
+│   └── server/
+│       └── router.ts (oRPC procedures)
+├── organizations/
+│   ├── ui/
+│   │   ├── components/
+│   │   │   ├── member-directory.tsx
+│   │   │   ├── invitation-manager.tsx
+│   │   │   ├── role-assignment.tsx
+│   │   │   ├── member-profile.tsx
+│   │   │   ├── organization-profile.tsx
+│   │   │   ├── branding-settings.tsx
+│   │   │   ├── security-settings.tsx
+│   │   │   ├── activity-feed.tsx
+│   │   │   └── usage-metrics.tsx
+│   │   └── views/
+│   │       ├── organization-dashboard-view.tsx
+│   │       ├── member-management-view.tsx
+│   │       ├── organization-settings-view.tsx
+│   │       └── organization-creation-view.tsx
+│   ├── lib/
+│   │   ├── member-management.ts
+│   │   ├── organization-settings.ts
+│   │   ├── invitations.ts
+│   │   └── analytics.ts
+│   ├── types/
+│   │   ├── member.ts
+│   │   ├── invitation.ts
+│   │   └── organization-settings.ts
+│   ├── hooks/
+│   │   ├── use-members.ts
+│   │   ├── use-invitations.ts
+│   │   └── use-organization-settings.ts
+│   └── server/
+│       └── router.ts (oRPC procedures)
+├── users/
+│   ├── ui/
+│   │   ├── components/
+│   │   │   ├── user-profile.tsx
+│   │   │   ├── security-settings.tsx
+│   │   │   ├── preferences-panel.tsx
+│   │   │   ├── organization-switcher.tsx
+│   │   │   └── organization-selector.tsx
+│   │   └── views/
+│   │       ├── user-profile-view.tsx
+│   │       ├── user-security-view.tsx
+│   │       └── user-preferences-view.tsx
+│   ├── lib/
+│   │   ├── profile-management.ts
+│   │   ├── security.ts
+│   │   └── preferences.ts
+│   ├── types/
+│   │   ├── user-profile.ts
+│   │   ├── security-settings.ts
+│   │   └── user-preferences.ts
+│   ├── hooks/
+│   │   ├── use-profile.ts
+│   │   ├── use-security.ts
+│   │   └── use-preferences.ts
+│   └── server/
+│       └── router.ts (oRPC procedures)
+└── permissions/
+    ├── ui/
+    │   ├── components/
+    │   │   ├── permission-matrix.tsx
+    │   │   ├── role-builder.tsx
+    │   │   ├── permission-templates.tsx
+    │   │   └── resource-permissions.tsx
+    │   └── views/
+    │       ├── role-management-view.tsx
+    │       └── permission-audit-view.tsx
+    ├── lib/
+    │   ├── role-management.ts
+    │   ├── permission-resolver.ts
+    │   └── audit.ts
+    ├── types/
+    │   ├── roles.ts
+    │   ├── permissions.ts
+    │   └── audit.ts
+    ├── hooks/
+    │   ├── use-roles.ts
+    │   └── use-permissions.ts
+    └── server/
+        └── router.ts (oRPC procedures)
+```
+
+### App Router Structure (Internationalized Routes)
+```
+/src/app/[locale]/
+├── (private)/
+│   ├── layout.tsx                    # Authentication wrapper + sidebar
+│   ├── dashboard/
+│   │   └── page.tsx                  # Uses dashboard-view from modules
+│   ├── admin/
+│   │   ├── users/
+│   │   │   └── page.tsx              # Uses admin/ui/views/user-management-view
+│   │   ├── organizations/
+│   │   │   └── page.tsx              # Uses admin/ui/views/organization-management-view
+│   │   ├── permissions/
+│   │   │   └── page.tsx              # Uses admin/ui/views/permissions-management-view
+│   │   └── page.tsx                  # Uses admin/ui/views/admin-dashboard-view
+│   ├── organization/
+│   │   ├── dashboard/
+│   │   │   └── page.tsx              # Uses organizations/ui/views/organization-dashboard-view
+│   │   ├── members/
+│   │   │   └── page.tsx              # Uses organizations/ui/views/member-management-view
+│   │   ├── settings/
+│   │   │   └── page.tsx              # Uses organizations/ui/views/organization-settings-view
+│   │   └── new/
+│   │       └── page.tsx              # Uses organizations/ui/views/organization-creation-view
+│   └── profile/
+│       ├── page.tsx                  # Uses users/ui/views/user-profile-view
+│       ├── security/
+│       │   └── page.tsx              # Uses users/ui/views/user-security-view
+│       └── preferences/
+│           └── page.tsx              # Uses users/ui/views/user-preferences-view
+├── auth/                             # Existing auth pages (public)
+└── layout.tsx                        # Root layout with i18n
+```
+
+### oRPC API Architecture
+Building on existing oRPC setup with module-based routers:
+
+```
+/src/orpc/
+├── router.ts                         # Main router combining all module routers
+└── modules/
+    ├── admin.ts                      # Admin-specific procedures
+    ├── organizations.ts              # Organization management procedures  
+    ├── users.ts                      # User management procedures
+    └── permissions.ts                # Permission management procedures
+
+/src/modules/{domain}/server/
+└── router.ts                         # Module-specific oRPC procedures with:
+                                      # - Better Auth context integration
+                                      # - Organization-scoped operations
+                                      # - Type-safe procedures
+                                      # - Permission checks
+```
+
+### Type-Safe API Procedures (oRPC)
+Each module router follows this pattern:
+```typescript
+// Example: /src/modules/organizations/server/router.ts
+import { adminOnlyProcedure, memberProcedure } from '@/lib/orpc-server'
+
+export const organizationsRouter = {
+  // Get organization members (requires membership)
+  getMembers: memberProcedure
+    .input(z.object({ organizationId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      // ctx.user and ctx.organization available
+      // Automatic organization membership check
+    }),
+    
+  // Invite member (requires admin role)
+  inviteMember: adminOnlyProcedure
+    .input(inviteMemberSchema)
+    .mutation(async ({ input, ctx }) => {
+      // Automatic admin permission check
+      // Better Auth integration
+    }),
+}
+```
+
+### Database Schema Extensions
+Building on existing schema, add these new tables:
+```sql
+-- Audit log for tracking all user actions
+audit_logs (
+  id, user_id, organization_id, action, resource_type, 
+  resource_id, metadata, ip_address, user_agent, created_at
+)
+
+-- Department organization within companies  
+departments (
+  id, organization_id, name, description, parent_id, created_at
+)
+
+-- User department assignments
+user_departments (
+  id, user_id, department_id, role, created_at
+)
+
+-- Custom permission definitions
+custom_permissions (
+  id, organization_id, name, resource_type, actions, created_at
+)
+
+-- Resource-specific permissions
+resource_permissions (
+  id, user_id, organization_id, resource_type, resource_id, 
+  permissions, granted_by, granted_at, expires_at
+)
+
+-- Security settings per organization
+organization_security_settings (
+  id, organization_id, require_2fa, session_timeout, 
+  password_policy, ip_restrictions, created_at
+)
+
+-- User security settings
+user_security_settings (
+  id, user_id, two_factor_enabled, backup_codes, 
+  login_notifications, created_at
+)
+```
+
+### Security & Access Control
+- **Route Protection:** Middleware for checking organization membership and permissions
+- **API Security:** Rate limiting, input validation, permission checks on all endpoints
+- **Data Isolation:** Strict organization-level data separation
+- **Audit Logging:** Comprehensive logging of all sensitive operations
+- **Session Security:** Secure session management with organization context
+
+---
+
+## Development Roadmap
+
+### Phase 1: Core User Management (MVP)
+**Goal:** Essential user administration and basic organization management
+
+**Features:**
+- User administration dashboard with search/filter
+- Basic user profile management
+- User status management (active/inactive/banned)
+- Organization member directory
+- Basic role assignment interface
+- Member invitation improvements
+- Audit logging foundation
+
+**Timeline:** 2-3 weeks
+**Priority:** Critical - Foundation for all other features
+
+### Phase 2: Advanced Organization Management
+**Goal:** Complete organization lifecycle and settings management
+
+**Features:**
+- Organization creation wizard
+- Organization settings and branding
+- Organization dashboard with analytics
+- Multi-organization support for users
+- Department organization system
+- Organization hierarchy support
+- Advanced member management
+
+**Timeline:** 2-3 weeks  
+**Priority:** High - Core business functionality
+
+### Phase 3: Advanced Permissions & Security
+**Goal:** Enterprise-grade security and granular permissions
+
+**Features:**
+- Custom role creation interface
+- Resource-level permission management
+- Permission templates and inheritance
+- Two-factor authentication implementation
+- Session management interface
+- Advanced security settings
+- Compliance reporting
+
+**Timeline:** 3-4 weeks
+**Priority:** High - Security and compliance requirements
+
+### Phase 4: Enterprise Features
+**Goal:** Advanced features for enterprise customers
+
+**Features:**
+- Single Sign-On (SSO) integration
+- Advanced audit logging and reporting
+- Custom permission types
+- Automated user provisioning
+- API access management
+- Advanced analytics and insights
+- Data export and compliance tools
+
+**Timeline:** 3-4 weeks
+**Priority:** Medium - Advanced enterprise needs
+
+---
+
+## Logical Dependency Chain
+
+### Foundation Layer (Build First)
+1. **Extended Database Schema** - Add audit logs, departments, security settings tables
+2. **Enhanced Better-Auth Configuration** - Add admin plugin, custom middleware
+3. **Permission System Expansion** - Extend current role system with UI management
+4. **API Foundation** - Core API routes for user and organization management
+
+### Core Functionality Layer  
+5. **User Management System** - Admin interface for user operations
+6. **Member Management Enhancement** - Improve invitation and member management
+7. **Organization Settings** - Complete organization configuration interface
+8. **Basic Audit System** - Track user actions and changes
+
+### Advanced Features Layer
+9. **Security Features** - 2FA, session management, security policies
+10. **Advanced Permissions** - Custom roles, resource permissions, templates  
+11. **Analytics & Reporting** - Usage metrics, audit reports, compliance
+12. **Enterprise Integration** - SSO, API management, advanced features
+
+### Frontend Integration Layer
+13. **Admin Dashboard** - Central management interface
+14. **Organization Dashboard** - Organization-specific management
+15. **User Profile Interface** - Enhanced user self-service
+16. **Mobile Responsive** - Ensure all interfaces work on mobile
+
+---
+
+## Risks and Mitigations
+
+### Technical Challenges
+**Risk:** Complex permission system leading to performance issues
+**Mitigation:** Implement efficient caching, database indexing, and permission resolution algorithms
+
+**Risk:** Data isolation failures in multi-tenant architecture  
+**Mitigation:** Strict database-level constraints, comprehensive testing, audit logging
+
+**Risk:** Integration complexity with existing better-auth setup
+**Mitigation:** Incremental implementation, extensive testing, backward compatibility
+
+### Business Risks  
+**Risk:** Feature creep leading to delayed delivery
+**Mitigation:** Strict MVP definition, phased development, regular stakeholder review
+
+**Risk:** User adoption challenges with complex permission system
+**Mitigation:** Intuitive UI design, comprehensive documentation, user training materials
+
+**Risk:** Compliance and security requirements not met
+**Mitigation:** Security review at each phase, compliance checklist, external audit
+
+### Development Risks
+**Risk:** Database migration issues with existing data
+**Mitigation:** Careful migration planning, backup strategies, rollback procedures
+
+**Risk:** Breaking changes to existing authentication flow
+**Mitigation:** Feature flags, gradual rollout, extensive testing
+
+**Risk:** Performance degradation with complex queries
+**Mitigation:** Query optimization, database indexing, caching strategies
+
+---
+
+## Success Metrics
+
+### User Engagement
+- User onboarding completion rate > 90%
+- Member invitation acceptance rate > 80%  
+- Daily active users in management interfaces > 50% of admins
+- User profile completion rate > 85%
+
+### System Performance
+- API response times < 200ms for 95% of requests
+- Database query performance < 100ms for complex permission checks
+- Zero data isolation failures
+- 99.9% system uptime
+
+### Security & Compliance
+- Zero unauthorized data access incidents
+- 100% audit trail coverage for sensitive operations
+- 95% of organizations enable 2FA within 30 days
+- Complete compliance with GDPR/SOC2 requirements
+
+### Business Impact
+- 40% reduction in user management overhead
+- 60% faster organization onboarding
+- 30% improvement in user retention
+- 50% reduction in support tickets related to access issues
+
+---
+
+## Appendix
+
+### Integration Points
+- **Better-Auth:** Extend existing configuration with admin and organization plugins
+- **Database:** Drizzle ORM with PostgreSQL for new tables and relationships  
+- **Email System:** Extend existing email templates for new notification types
+- **Frontend:** Next.js with React components and shadcn/ui design system
+- **API:** Build on existing ORPC setup for type-safe API endpoints
+
+### Technical Specifications
+- **Authentication:** Better-Auth with organization plugin and custom roles
+- **Database:** PostgreSQL with Drizzle ORM and strict multi-tenant isolation
+- **Frontend:** Next.js 14, React, TypeScript, shadcn/ui, TailwindCSS
+- **Backend:** ORPC for type-safe APIs, better-auth for authentication
+- **Email:** Existing email service integration with new templates
+- **Security:** HTTPS, secure cookies, CSRF protection, rate limiting
+
+### Compliance Considerations
+- **GDPR:** User data export, deletion, consent management
+- **SOC2:** Audit logging, access controls, security monitoring  
+- **HIPAA:** Enhanced security for healthcare organizations
+- **Enterprise:** SSO integration, advanced audit reporting
+
+This PRD provides a comprehensive roadmap for implementing enterprise-grade user, organization, and permissions management while building on your excellent better-auth foundation. 

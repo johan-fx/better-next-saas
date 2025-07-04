@@ -1,0 +1,196 @@
+---
+description: This rule describes the project folder structure and environment variables
+globs: 
+alwaysApply: false
+---
+# Project Structure & Environment Variables
+
+## 🏗️ Architecture Overview
+
+This project follows a **hexagonal (modular) architecture** with **Better Auth integration** that promotes separation of concerns, maintainability, and scalability.
+
+### Key Benefits
+
+- 🔒 **Encapsulation** - Each module contains all related functionality
+- 🧪 **Testability** - Isolated modules are easier to test independently
+- 📈 **Scalability** - Add new modules without affecting existing ones
+- 🛠️ **Maintainability** - Clear boundaries between different business domains
+- 🔐 **Authentication-First** - Built-in authentication context throughout the application
+
+## 📁 Project Structure
+
+```bash
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── [locale]/                 # Internationalized routes
+│   │   │   ├── (private)/            # 🔒 Private/Protected Route Group
+│   │   │   │   ├── layout.tsx        # Authentication wrapper + sidebar
+│   │   │   │   └── dashboard/        # Protected dashboard section
+│   │   │   │       └── page.tsx      # Main dashboard page
+│   │   │   └── auth/                 # 🔓 Public 
+│   │   ├── api/             # API routes
+│   │   │   ├── auth/        # Better Auth endpoints
+│   │   │   └── trpc/         # tRPC endpoints
+│   │   └── globals.css      # Global styles
+│   ├── lib/                 # Core configurations
+│   │   ├── auth.ts          # Better Auth server configuration
+│   │   ├── auth-client.ts   # Better Auth client configuration
+│   │   ├── env.ts           # Environment validation (CENTRALIZED)
+│   │   └── db/              # Database configuration
+│   ├── trpc/                # tRPC exports and documentation
+│   ├── components/          # Shared UI components
+│   ├── hooks/               # Shared React hooks
+│   ├── messages/            # Translation files
+│   ├── modules/
+│   │   ├── {domain}/
+│   │   │   ├── server/
+│   │   │   │   ├── params.ts  # NUQS Query params definitions
+│   │   │   │   └── router.ts  # tRPC procedures router
+│   │   │   ├── ui/
+│   │   │   │   ├── components/  # Reusable components
+│   │   │   │   └── views/       # Page-level components
+│   │   │   ├── lib/             # Business logic, utils
+│   │   │   ├── hooks/           # Custom React hooks
+│   │   │   └── types.ts         # TypeScript type definitions
+```
+
+## 🔧 Environment Variables - CRITICAL RULES
+
+### ⚠️ ALWAYS USE CENTRALIZED VALIDATION
+
+**NEVER** duplicate environment variable validation. **ALWAYS** use [env.ts](mdc:src/lib/env.ts):
+
+```typescript
+// ✅ CORRECT - Use centralized validation
+import { env } from '@/lib/env'
+
+export function someFunction() {
+  console.log(`Database: ${env.DATABASE_URL}`)
+  console.log(`MailDev: ${env.MAILDEV_WEB_URL}`)
+}
+
+// ❌ WRONG - Don't manually validate env vars
+const DATABASE_URL = process.env.DATABASE_URL
+if (!DATABASE_URL) throw new Error('Missing DATABASE_URL')
+```
+
+### Environment Variable Categories in [env.ts](mdc:src/lib/env.ts)
+
+1. **App Configuration** - APP_NAME, APP_LOGO_URL, etc.
+2. **Database** - DATABASE_URL (required)
+3. **Better Auth** - BETTER_AUTH_SECRET (required, min 32 chars), BETTER_AUTH_URL
+4. **Social Providers** - GITHUB_CLIENT_ID, GOOGLE_CLIENT_ID (optional)
+5. **SMTP Email** - SMTP_HOST, SMTP_FROM, etc. (conditional validation)
+6. **Testing (MailDev)** - MAILDEV_WEB_URL, MAILDEV_SMTP_HOST, MAILDEV_SMTP_PORT
+7. **Email Testing** - MAILSLURP_API_KEY (optional)
+
+### Adding New Environment Variables
+
+1. Add to the Zod schema in [env.ts](mdc:src/lib/env.ts)
+2. Add to the env object parsing
+3. Use proper validation (URL, email, min length, etc.)
+4. Provide sensible defaults where appropriate
+5. Update TypeScript type automatically via Zod inference
+
+## 🔐 Authentication Patterns
+
+### File References
+
+- Server config: [auth.ts](mdc:src/lib/auth.ts)
+- Client config: [auth-client.ts](mdc:src/lib/auth-client.ts)
+- tRPC router: [router.ts](mdc:src/trpc/routers/_app.ts)
+- Database schema: [schema.ts](mdc:src/lib/db/schema.ts)
+
+### Client-Side Authentication Pattern
+
+```typescript
+'use client'
+import { useSession, signIn, signOut } from '@/lib/auth-client'
+
+export function AuthButton() {
+  const { data: session, isPending } = useSession()
+  // Handle loading, authenticated, and unauthenticated states
+}
+```
+
+### Server-Side Authentication Pattern
+
+```typescript
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+
+export default async function ProtectedPage() {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  
+  if (!session) redirect('/login')
+  // Guaranteed authenticated user context
+}
+```
+
+## 🗄️ Database Patterns
+
+### Always use [schema.ts](mdc:src/lib/db/schema.ts) for
+
+- Better Auth table definitions
+- Custom application tables
+- Type-safe database operations with Drizzle ORM
+
+### Common Database Scripts
+
+```bash
+npm run db:generate  # Generate migrations
+npm run db:migrate   # Apply migrations  
+npm run db:push      # Push schema (development)
+npm run db:studio    # Open Drizzle Studio
+```
+
+## 🌍 Internationalization
+
+### Key Files
+
+- [middleware.ts](mdc:middleware.ts) - Locale detection and routing
+- [i18n/](mdc:src/i18n) - Configuration
+- [messages/](mdc:src/messages) - Translation files
+
+### URL Structure
+
+- `/[locale]/` - All routes are internationalized
+- Automatic locale detection and routing
+
+## 🎨 UI Components
+
+- Always use shadcn/ui components from [components/ui/](mdc:src/components/ui)
+- Shared components go in [components/](mdc:src/components)
+
+## 📦 Import Patterns
+
+### Use Path Aliases
+
+```typescript
+// ✅ CORRECT
+import { env } from '@/lib/env'
+import { Button } from '@/components/ui/button'
+
+// ❌ WRONG  
+import { env } from '../../../src/lib/env'
+```
+
+## 🔄 Code Quality Rules
+
+1. **Keep files small and focused** (<200 lines)
+2. **Write clean, simple & readable code**
+3. **Test after every meaningful change**
+4. **Use clear & consistent naming**
+5. **Add explanatory comments**
+6. **Think thoroughly before coding**
+
+## 🚨 Critical Reminders
+
+- **NEVER** duplicate environment variable validation
+- **ALWAYS** import from `@/lib/env` for environment variables
+- **ALWAYS** use Better Auth context in oRPC procedures
+- **ALWAYS** follow the hexagonal architecture pattern
+- **ALWAYS** use TypeScript for type safety
+- **ALWAYS** validate environment variables with Zod in [env.ts](mdc:src/lib/env.ts)
