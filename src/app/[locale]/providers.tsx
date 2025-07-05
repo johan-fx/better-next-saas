@@ -37,8 +37,9 @@ export function Providers({ children }: { children: ReactNode }) {
 				}}
 				organization={{
 					logo: {
-						upload: async (file) => {
+						upload: async (fileToUpload) => {
 							// Your upload logic
+							console.log("upload", fileToUpload);
 							return "";
 						},
 						size: 256,

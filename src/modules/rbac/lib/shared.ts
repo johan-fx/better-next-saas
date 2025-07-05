@@ -5,7 +5,7 @@
  * They don't import any server-only or client-only features.
  */
 
-import { ApiResponse, MemberData, ValidRole } from "../types";
+import type { ApiResponse, MemberData, ValidRole } from "../types";
 
 /**
  * Role hierarchy for quick checks

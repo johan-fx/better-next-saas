@@ -77,6 +77,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.4",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.5",
     "rimraf": "^6.0.1",
     "tailwindcss": "^4",
     "tailwindcss-safe-area": "^0.6.0",

@@ -2,7 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { RBACDemoView } from "@/modules/rbac/ui/views/rbac-demo-view";
 
 type Props = {
-  params: Promise<{ locale: string }>;
+	params: Promise<{ locale: string }>;
 };
 
 /**
@@ -12,8 +12,8 @@ type Props = {
  * with different permission levels and UI components.
  */
 export default async function RBACDemoPage({ params }: Props) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+	const { locale } = await params;
+	setRequestLocale(locale);
 
-  return <RBACDemoView />;
+	return <RBACDemoView />;
 }

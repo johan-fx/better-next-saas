@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { ClientPermissions } from "@/modules/rbac/lib/client";
+import { RoleChecks } from "@/modules/rbac/lib/shared";
 import {
-	type Permission,
-	RoleChecks,
-	type ValidRole,
-} from "@/modules/rbac/lib/shared";
+	hasPermission as hasPermissionClient,
+	hasRole as hasRoleClient,
+} from "../lib/client";
+import type { Permission, ValidRole } from "../types";
 
 /**
  * React Hooks for Permission Checking
@@ -32,7 +32,7 @@ export function usePermissions(permissions: Permission) {
 			}
 
 			try {
-				const result = await ClientPermissions.hasPermission(permissions);
+				const result = await hasPermissionClient(permissions);
 				setHasPermission(result);
 			} catch (error) {
 				console.error("Permission check error:", error);
@@ -65,7 +65,7 @@ export function useRole(role: ValidRole) {
 			}
 
 			try {
-				const result = await ClientPermissions.hasRole(role);
+				const result = await hasRoleClient(role);
 				setHasRole(result);
 			} catch (error) {
 				console.error("Role check error:", error);
@@ -100,7 +100,7 @@ export function useCurrentRole() {
 			try {
 				// TODO: This would need to be implemented in ClientPermissions
 				// For now, we'll use a simple approach
-				const sessionData = await ClientPermissions.getSession();
+				// const sessionData = await ClientPermissions.getSession();
 
 				// Extract role from session or member data
 				// This implementation depends on how Better Auth stores role information
