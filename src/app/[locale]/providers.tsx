@@ -21,6 +21,11 @@ export function Providers({ children }: { children: ReactNode }) {
 				authClient={authClient}
 				navigate={router.push}
 				replace={router.replace}
+				redirectTo="/account/auth/settings"
+				settings={{
+					url: "/account/auth/settings",
+					basePath: "/account/auth/",
+				}}
 				onSessionChange={() => {
 					router.refresh();
 				}}
