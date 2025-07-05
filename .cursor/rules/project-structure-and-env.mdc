@@ -21,37 +21,40 @@ This project follows a **hexagonal (modular) architecture** with **Better Auth i
 
 ```bash
 ├── src/
-│   ├── app/                 # Next.js App Router
-│   │   ├── [locale]/                 # Internationalized routes
-│   │   │   ├── (private)/            # 🔒 Private/Protected Route Group
-│   │   │   │   ├── layout.tsx        # Authentication wrapper + sidebar
-│   │   │   │   └── dashboard/        # Protected dashboard section
-│   │   │   │       └── page.tsx      # Main dashboard page
-│   │   │   └── auth/                 # 🔓 Public 
-│   │   ├── api/             # API routes
-│   │   │   ├── auth/        # Better Auth endpoints
-│   │   │   └── trpc/         # tRPC endpoints
-│   │   └── globals.css      # Global styles
-│   ├── lib/                 # Core configurations
-│   │   ├── auth.ts          # Better Auth server configuration
-│   │   ├── auth-client.ts   # Better Auth client configuration
-│   │   ├── env.ts           # Environment validation (CENTRALIZED)
-│   │   └── db/              # Database configuration
-│   ├── trpc/                # tRPC exports and documentation
-│   ├── components/          # Shared UI components
-│   ├── hooks/               # Shared React hooks
-│   ├── messages/            # Translation files
+│   ├── app/                      # Next.js App Router
+│   │   ├── [locale]/             # Internationalized routes
+│   │   │   ├── (public)/         # 🌐 Public pages with PublicHeader
+│   │   │   │   ├── layout.tsx    # Includes PublicHeader
+│   │   │   │   ├── page.tsx      # Home page
+│   │   │   │   └── auth/         # Authentication pages
+│   │   │   └── (private)/        # 🔒 Private/Protected Route Group
+│   │   │       ├── layout.tsx    # Authentication wrapper + sidebar
+│   │   │       └── dashboard/    # Protected dashboard section
+│   │   │           └── page.tsx  # Main dashboard page
+│   │   ├── api/                  # API routes
+│   │   │   ├── auth/             # Better Auth endpoints
+│   │   │   └── trpc/             # tRPC endpoints
+│   │   └── globals.css           # Global styles
+│   ├── lib/                      # Core configurations
+│   │   ├── auth.ts               # Better Auth server configuration
+│   │   ├── auth-client.ts        # Better Auth client configuration
+│   │   ├── env.ts                # Environment validation (CENTRALIZED)
+│   │   └── db/                   # Database configuration
+│   ├── trpc/                     # tRPC exports and documentation
+│   ├── components/               # Shared UI components
+│   ├── hooks/                    # Shared React hooks
+│   ├── messages/                 # Translation files
 │   ├── modules/
 │   │   ├── {domain}/
 │   │   │   ├── server/
-│   │   │   │   ├── params.ts  # NUQS Query params definitions
-│   │   │   │   └── router.ts  # tRPC procedures router
+│   │   │   │   ├── params.ts     # NUQS Query params definitions
+│   │   │   │   └── router.ts     # tRPC procedures router
 │   │   │   ├── ui/
-│   │   │   │   ├── components/  # Reusable components
-│   │   │   │   └── views/       # Page-level components
-│   │   │   ├── lib/             # Business logic, utils
-│   │   │   ├── hooks/           # Custom React hooks
-│   │   │   └── types.ts         # TypeScript type definitions
+│   │   │   │   ├── components/   # Reusable components
+│   │   │   │   └── views/        # Page-level components
+│   │   │   ├── lib/              # Business logic, utils
+│   │   │   ├── hooks/            # Custom React hooks
+│   │   │   └── types.ts          # TypeScript type definitions
 ```
 
 ## 🔧 Environment Variables - CRITICAL RULES

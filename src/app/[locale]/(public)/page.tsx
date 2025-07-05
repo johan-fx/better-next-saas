@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { LanguageSwitcher } from "@/modules/i18n/ui/components/language-switcher";
 
 type Props = {
 	params: Promise<{ locale: string }>;
@@ -17,13 +16,8 @@ export default async function HomePage({ params }: Props) {
 	const common = await getTranslations("Common");
 
 	return (
-		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-			{/* Language Switcher in top-right corner */}
-			<div className="absolute top-4 right-4">
-				<LanguageSwitcher />
-			</div>
-
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+		<div className="grid grid-rows-[1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+			<main className="flex flex-col gap-[32px] items-center sm:items-start">
 				<Image
 					className="dark:invert"
 					src="/next.svg"
@@ -48,7 +42,7 @@ export default async function HomePage({ params }: Props) {
 					<li className="mb-2 tracking-[-.01em]">
 						Get started by editing{" "}
 						<code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-							src/app/[locale]/page.tsx
+							src/app/[locale]/(public)/page.tsx
 						</code>
 						.
 					</li>
@@ -68,7 +62,7 @@ export default async function HomePage({ params }: Props) {
 					</a>
 				</div>
 			</main>
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+			<footer className="flex gap-[24px] flex-wrap items-center justify-center">
 				<a
 					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
 					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"

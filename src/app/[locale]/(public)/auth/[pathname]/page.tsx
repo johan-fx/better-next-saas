@@ -27,7 +27,7 @@ export default async function AuthPage({
 	}
 
 	return (
-		<main className="container flex grow flex-col items-center justify-center gap-4 self-center p-4 md:p-6">
+		<div className="container flex grow flex-col items-center justify-center gap-4 self-center p-4 md:p-6">
 			<AuthCard
 				classNames={{
 					settings: {
@@ -38,6 +38,6 @@ export default async function AuthPage({
 				}}
 				pathname={pathname}
 			/>
-		</main>
+		</div>
 	);
 }
