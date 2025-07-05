@@ -16,12 +16,7 @@ export function Providers({ children }: { children: ReactNode }) {
 	const localization = useAuthUILocalizations();
 
 	return (
-		<ThemeProvider
-			attribute="class"
-			defaultTheme="system"
-			enableSystem
-			disableTransitionOnChange
-		>
+		<ThemeProvider attribute="class" disableTransitionOnChange>
 			<AuthUIProvider
 				authClient={authClient}
 				navigate={router.push}
