@@ -55,3 +55,10 @@ export const resolveLocaleFromHeaders = (
 
 	return matchedLocale as SupportedLocale;
 };
+export function getPreferredLanguage(
+	request: Request | undefined,
+): SupportedLocale {
+	return (
+		resolveLocaleFromHeaders(request?.headers ?? new Headers()) ?? defaultLocale
+	);
+}

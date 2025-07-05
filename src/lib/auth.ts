@@ -2,15 +2,15 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
 import slugify from "slugify";
+import { organizationCreationHook } from "@/modules/auth/server/lib/organization-creation-hook";
+import { userCreationHook } from "@/modules/auth/server/lib/user-creation-hook";
 import {
 	sendInvitationEmail,
 	sendPasswordResetEmail,
 	sendVerificationEmail,
 } from "@/modules/emails";
-import { defaultLocale } from "@/modules/i18n/routing";
-import { resolveLocaleFromHeaders } from "@/modules/i18n/utils";
+import { getPreferredLanguage } from "@/modules/i18n/utils";
 import { ac, roles } from "@/modules/rbac/permissions";
-import { createDefaultPreferences } from "@/modules/users/server/utils/user-preferences";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { env } from "./env";
@@ -30,24 +30,20 @@ import { env } from "./env";
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
-		schema: {
-			user: schema.users,
-			session: schema.sessions,
-			account: schema.accounts,
-			verification: schema.verifications,
-			// Organization tables
-			organization: schema.organizations,
-			member: schema.members,
-			invitation: schema.invitations,
-			// User preferences table
-			userPreferences: schema.userPreferences,
-		},
+		schema: { ...schema },
 	}),
 
 	// Database hooks
 	databaseHooks: {
 		// Note: User preferences are created when they join organizations
 		// since preferences are per-organization in this multi-tenant setup
+
+		// Create default organization for new users not coming from invitations
+		user: {
+			create: {
+				after: userCreationHook,
+			},
+		},
 	},
 
 	// Plugins
@@ -82,50 +78,7 @@ export const auth = betterAuth({
 
 			// Organization creation hooks
 			organizationCreation: {
-				beforeCreate: async ({ organization, user }) => {
-					// Add any custom logic before organization creation
-					// For example, validate organization data or check user limits
-					console.log(
-						`Creating organization "${organization.name}" for user ${user.email}`,
-					);
-
-					return {
-						data: {
-							...organization,
-							// Add any additional metadata
-							metadata: JSON.stringify({
-								createdBy: user.id,
-								createdAt: new Date().toISOString(),
-							}),
-						},
-					};
-				},
-				afterCreate: async ({ organization, member, user }, request) => {
-					// Create default user preferences for the new organization
-					try {
-						// Extract preferred language from request context or use default
-						const preferredLanguage =
-							resolveLocaleFromHeaders(request?.headers ?? new Headers()) ??
-							defaultLocale;
-
-						await createDefaultPreferences(user.id, {
-							organizationId: organization.id,
-							language: preferredLanguage,
-						});
-
-						console.log(
-							`Created user preferences for ${user.email} in organization "${organization.name}"`,
-						);
-					} catch (error) {
-						console.error("Failed to create user preferences:", error);
-					}
-
-					// Add any custom logic after organization creation
-					// For example, create default resources or send notifications
-					console.log(
-						`Organization "${organization.name}" created successfully with member ${member.id} for user ${user.email}`,
-					);
-				},
+				afterCreate: organizationCreationHook,
 			},
 
 			// Invitation email configuration
@@ -158,11 +111,14 @@ export const auth = betterAuth({
 		expiresIn: 60 * 60 * Number(env.EMAIL_VERIFICATION_TOKEN_EXPIRES_IN),
 
 		// Email sending function
-		sendVerificationEmail: async ({ user, url }) => {
+		sendVerificationEmail: async ({ user, url }, request) => {
+			const preferredLanguage = getPreferredLanguage(request);
+
 			await sendVerificationEmail({
 				to: user.email,
 				userName: user.name || undefined,
 				verificationUrl: url,
+				locale: preferredLanguage,
 			});
 		},
 	},
@@ -173,11 +129,14 @@ export const auth = betterAuth({
 		requireEmailVerification: true, // Enable email verification
 
 		// Password reset configuration
-		sendResetPassword: async ({ user, url }) => {
+		sendResetPassword: async ({ user, url }, request) => {
+			const preferredLanguage = getPreferredLanguage(request);
+
 			await sendPasswordResetEmail({
 				to: user.email,
 				userName: user.name || undefined,
 				resetUrl: url,
+				locale: preferredLanguage,
 			});
 		},
 	},
@@ -217,30 +176,6 @@ export const auth = betterAuth({
 
 	// Base URL
 	baseURL: env.BETTER_AUTH_URL,
-
-	// After hook: send welcome email after successful verification
-	/*
-  hooks: {
-    after: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === "/auth/verify-email" && ctx.context.session?.user) {
-        try {
-          const userLocale = resolveLocaleFromHeaders(
-            ctx.headers ?? new Headers()
-          );
-
-          await sendWelcomeEmail({
-            to: ctx.context.session.user.email,
-            userName: ctx.context.session.user.name || "there",
-            dashboardUrl: `${env.NEXT_PUBLIC_APP_URL}/${userLocale}/dashboard`,
-            locale: userLocale,
-          });
-        } catch (error) {
-          console.error("Failed to send welcome email:", error);
-        }
-      }
-    }),
-  },
-  */
 });
 
 // Export types for use throughout the application

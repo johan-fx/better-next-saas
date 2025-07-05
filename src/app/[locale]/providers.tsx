@@ -48,6 +48,8 @@ export function Providers({ children }: { children: ReactNode }) {
 					customRoles: [],
 				}}
 				localization={localization}
+				multiSession
+				magicLink
 			>
 				{children}
 				<Toaster />

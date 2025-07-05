@@ -39,11 +39,11 @@ export async function getUserPreferences(
 		// Try to get existing preferences
 		const existingPreferences = await db
 			.select()
-			.from(schema.userPreferences)
+			.from(schema.userPreference)
 			.where(
 				and(
-					eq(schema.userPreferences.userId, userId),
-					eq(schema.userPreferences.organizationId, organizationId),
+					eq(schema.userPreference.userId, userId),
+					eq(schema.userPreference.organizationId, organizationId),
 				),
 			)
 			.limit(1);
@@ -65,7 +65,7 @@ export async function getUserPreferences(
 		};
 
 		const createdPreferences = await db
-			.insert(schema.userPreferences)
+			.insert(schema.userPreference)
 			.values(defaultPreferences)
 			.returning();
 
@@ -85,12 +85,12 @@ export async function updateUserPreferences(
 ): Promise<UserPreferences> {
 	try {
 		const updatedPreferences = await db
-			.update(schema.userPreferences)
+			.update(schema.userPreference)
 			.set({
 				...updates,
 				updatedAt: new Date(),
 			})
-			.where(eq(schema.userPreferences.userId, userId))
+			.where(eq(schema.userPreference.userId, userId))
 			.returning();
 
 		if (updatedPreferences.length === 0) {
@@ -228,7 +228,7 @@ export async function createDefaultPreferences(
 
 	try {
 		const createdPreferences = await db
-			.insert(schema.userPreferences)
+			.insert(schema.userPreference)
 			.values(defaultPreferences)
 			.returning();
 
