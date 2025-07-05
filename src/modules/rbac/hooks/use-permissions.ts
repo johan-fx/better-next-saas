@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { RoleChecks } from "@/modules/rbac/lib/shared";
 import {
+	getCurrentRole as getCurrentRoleClient,
 	hasPermission as hasPermissionClient,
 	hasRole as hasRoleClient,
 } from "../lib/client";
@@ -13,6 +14,7 @@ import type { Permission, ValidRole } from "../types";
  * React Hooks for Permission Checking
  *
  * These hooks provide reactive permission checking in React components.
+ * They use Better Auth's organization plugin with proper client-side functions.
  */
 
 /**
@@ -32,6 +34,7 @@ export function usePermissions(permissions: Permission) {
 			}
 
 			try {
+				// Use the proper client function that implements Better Auth's organization.hasPermission
 				const result = await hasPermissionClient(permissions);
 				setHasPermission(result);
 			} catch (error) {
@@ -65,6 +68,7 @@ export function useRole(role: ValidRole) {
 			}
 
 			try {
+				// Use the proper client function that gets role from Better Auth's organization
 				const result = await hasRoleClient(role);
 				setHasRole(result);
 			} catch (error) {
@@ -98,13 +102,9 @@ export function useCurrentRole() {
 			}
 
 			try {
-				// TODO: This would need to be implemented in ClientPermissions
-				// For now, we'll use a simple approach
-				// const sessionData = await ClientPermissions.getSession();
-
-				// Extract role from session or member data
-				// This implementation depends on how Better Auth stores role information
-				setRole("member"); // Fallback - this should be properly implemented
+				// Use the proper client function that extracts role from Better Auth's organization member data
+				const currentRole = await getCurrentRoleClient();
+				setRole(currentRole as ValidRole);
 			} catch (error) {
 				console.error("Current role check error:", error);
 				setRole(null);
@@ -135,7 +135,7 @@ export function useAuth() {
 		role,
 		isAuthenticated,
 		isLoading,
-		// Convenience role checks
+		// Convenience role checks - these will work correctly now that role is properly fetched
 		isOwner: role ? RoleChecks.isOwner(role) : false,
 		isAdmin: role ? RoleChecks.isAdmin(role) : false,
 		isProjectManager: role ? RoleChecks.isProjectManager(role) : false,

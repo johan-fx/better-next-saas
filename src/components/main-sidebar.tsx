@@ -47,7 +47,7 @@ const MainSidebar = () => {
 		},
 		{
 			title: "RBAC Demo",
-			url: "/dashboard/rbac-demo",
+			url: "/rbac-demo",
 			icon: Shield,
 		},
 	];
