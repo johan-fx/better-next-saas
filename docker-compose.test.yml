@@ -4,7 +4,7 @@ services:
   # MailDev service for email testing
   maildev:
     image: maildev/maildev:latest
-    container_name: deck-pilot-maildev
+    container_name: better-saas-maildev
     ports:
       - "1025:1025" # SMTP port
       - "1080:1080" # Web interface port
