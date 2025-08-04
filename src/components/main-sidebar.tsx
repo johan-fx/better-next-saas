@@ -33,8 +33,7 @@ import { Link } from "@/modules/i18n/navigation";
  * - Better Auth integration for sign out
  */
 const MainSidebar = () => {
-	const t = useTranslations("Navigation");
-	const authT = useTranslations("Auth");
+	const t = useTranslations("navigation");
 	const router = useRouter();
 	const { data: session } = authClient.useSession();
 
@@ -62,7 +61,7 @@ const MainSidebar = () => {
 				// Redirect to sign-in page after sign out
 				fetchOptions: {
 					onSuccess: () => {
-						toast.success(authT("signOut"));
+						toast.success(t("logout"));
 						router.push("/auth/sign-in");
 					},
 				},
@@ -136,10 +135,10 @@ const MainSidebar = () => {
 								size="sm"
 								onClick={handleSignOut}
 								className="h-8 w-8 p-0 shrink-0"
-								title={authT("signOut")}
+								title={t("logout")}
 							>
 								<LogOut className="h-4 w-4" />
-								<span className="sr-only">{authT("signOut")}</span>
+								<span className="sr-only">{t("logout")}</span>
 							</Button>
 						</div>
 					</SidebarMenuItem>

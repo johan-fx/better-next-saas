@@ -6,6 +6,7 @@ import {
 	timestamp,
 	unique,
 } from "drizzle-orm/pg-core";
+import { defaultLocale } from "@/modules/i18n/routing";
 
 /**
  * Database Schema for Better Auth
@@ -38,6 +39,7 @@ export const user = pgTable("user", {
 		.$defaultFn(() => false)
 		.notNull(),
 	image: text("image"),
+	language: text("language").notNull().default(defaultLocale),
 	createdAt: timestamp("created_at")
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
@@ -155,7 +157,7 @@ export const userPreference = pgTable(
 		organizationId: text("organizationId")
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),
-		language: text("language").notNull().default("en"), // User's preferred language
+		language: text("language").notNull().default(defaultLocale), // User's preferred language
 		theme: text("theme").default("system"), // Theme preference: light, dark, system
 		timezone: text("timezone").default("UTC"), // User's timezone preference
 		emailNotifications: boolean("emailNotifications").notNull().default(true), // Email notification preference

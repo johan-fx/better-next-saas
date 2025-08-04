@@ -76,7 +76,7 @@ export function SignupForm({ onSubmit, isLoading }: SignupFormProps) {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-	const t = useTranslations("Auth");
+	const t = useTranslations("auth");
 
 	// Create Zod schema with translations
 	const signupSchema = createSignupSchema(t);

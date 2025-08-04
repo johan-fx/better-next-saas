@@ -4,8 +4,6 @@ import { nanoid } from "nanoid";
 import slugify from "slugify";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
-import { env } from "@/lib/env";
-import { sendWelcomeEmail } from "@/modules/emails";
 import { getPreferredLanguage } from "@/modules/i18n/utils";
 import { createDefaultPreferences } from "@/modules/users/server/utils/user-preferences";
 
@@ -15,15 +13,6 @@ export async function userCreationHook(
 ) {
 	console.log("🔴 AFTER USER CREATION:", user);
 	try {
-		// Extract preferred language from request context or use default
-		const preferredLanguage = getPreferredLanguage(ctx?.request);
-		await sendWelcomeEmail({
-			to: user.email,
-			userName: user.name || "there",
-			dashboardUrl: `${env.NEXT_PUBLIC_APP_URL}/${preferredLanguage}/dashboard`,
-			locale: preferredLanguage,
-		});
-
 		// Check if user already has any organization memberships
 		// If they do, it means they came from an invitation, so skip creating default org
 		const existingMemberships = await db.query.member.findMany({

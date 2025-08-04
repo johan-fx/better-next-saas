@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
  * Centralizes all translation keys for the AuthUIProvider
  */
 export function useAuthUILocalizations() {
-	const t = useTranslations("AuthUI");
+	const t = useTranslations("authUI");
 
 	// Create the localization object by mapping all the keys from the translation file
 	const localization = {

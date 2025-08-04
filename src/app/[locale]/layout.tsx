@@ -7,7 +7,9 @@ import { NuqsAdapter } from "nuqs/adapters/next";
 import { routing } from "@/modules/i18n/routing";
 import { TRPCReactProvider } from "@/trpc/client";
 import "@/styles/globals.css";
-import { Providers } from "./providers";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient, trpc } from "@/trpc/server";
+import { ClientProviders } from "./providers";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -50,6 +52,9 @@ export default async function LocaleLayout({ children, params }: Props) {
 	// Enable static rendering
 	setRequestLocale(locale);
 
+	const queryClient = getQueryClient();
+	void queryClient.prefetchQuery(trpc.auth.socialProviders.queryOptions());
+
 	return (
 		<NuqsAdapter>
 			<TRPCReactProvider>
@@ -58,7 +63,9 @@ export default async function LocaleLayout({ children, params }: Props) {
 						className={`${geistSans.variable} ${geistMono.variable} flex min-h-svh flex-col antialiased`}
 					>
 						<NextIntlClientProvider>
-							<Providers>{children}</Providers>
+							<HydrationBoundary state={dehydrate(queryClient)}>
+								<ClientProviders>{children}</ClientProviders>
+							</HydrationBoundary>
 						</NextIntlClientProvider>
 					</body>
 				</html>

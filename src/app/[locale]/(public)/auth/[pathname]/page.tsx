@@ -3,6 +3,8 @@ import { authViewPaths } from "@daveyplate/better-auth-ui/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { SignInView } from "@/modules/auth/ui/views/signin-view";
+import { SignUpView } from "@/modules/auth/ui/views/signup-view";
 
 export function generateStaticParams() {
 	return Object.values(authViewPaths).map((pathname) => ({ pathname }));
@@ -24,6 +26,14 @@ export default async function AuthPage({
 		});
 
 		if (!sessionData) redirect("/auth/sign-in?redirectTo=/auth/settings");
+	}
+
+	if (pathname === "sign-in") {
+		return <SignInView />;
+	}
+
+	if (pathname === "sign-up") {
+		return <SignUpView />;
 	}
 
 	return (

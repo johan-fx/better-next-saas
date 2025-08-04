@@ -9,6 +9,7 @@ import {
 	sendPasswordResetEmail,
 	sendVerificationEmail,
 } from "@/modules/emails";
+import { defaultLocale } from "@/modules/i18n/routing";
 import { getPreferredLanguage } from "@/modules/i18n/utils";
 import { ac, roles } from "@/modules/rbac/permissions";
 import { db } from "./db";
@@ -33,6 +34,17 @@ export const auth = betterAuth({
 		schema: { ...schema },
 	}),
 
+	user: {
+		additionalFields: {
+			language: {
+				type: "string",
+				required: false,
+				defaultValue: defaultLocale, // Default locale for new users
+				input: true, // Allow users to set this field during signup
+			},
+		},
+	},
+
 	// Database hooks
 	databaseHooks: {
 		// Note: User preferences are created when they join organizations
@@ -41,6 +53,16 @@ export const auth = betterAuth({
 		// Create default organization for new users not coming from invitations
 		user: {
 			create: {
+				before: async (user, ctx) => {
+					const language = ctx?.getCookie("NEXT_LOCALE") ?? defaultLocale;
+
+					return {
+						data: {
+							...user,
+							language,
+						},
+					};
+				},
 				after: userCreationHook,
 			},
 		},
@@ -114,6 +136,12 @@ export const auth = betterAuth({
 		sendVerificationEmail: async ({ user, url }, request) => {
 			const preferredLanguage = getPreferredLanguage(request);
 
+			console.log("sendVerificationEmail", {
+				user,
+				url,
+				preferredLanguage,
+			});
+
 			await sendVerificationEmail({
 				to: user.email,
 				userName: user.name || undefined,
@@ -127,6 +155,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true, // Enable email verification
+		minPasswordLength: 5,
 
 		// Password reset configuration
 		sendResetPassword: async ({ user, url }, request) => {
@@ -148,13 +177,26 @@ export const auth = betterAuth({
 				github: {
 					clientId: env.GITHUB_CLIENT_ID,
 					clientSecret: env.GITHUB_CLIENT_SECRET,
+					mapProfileToUser: (profile) => {
+						return {
+							firstName: profile.name.split(" ")[0],
+							lastName: profile.name.split(" ")[1],
+						};
+					},
 				},
 			}),
 		...(env.GOOGLE_CLIENT_ID &&
 			env.GOOGLE_CLIENT_SECRET && {
 				google: {
+					prompt: "select_account",
 					clientId: env.GOOGLE_CLIENT_ID,
 					clientSecret: env.GOOGLE_CLIENT_SECRET,
+					mapProfileToUser: (profile) => {
+						return {
+							firstName: profile.given_name,
+							lastName: profile.family_name,
+						};
+					},
 				},
 			}),
 	},
@@ -171,11 +213,19 @@ export const auth = betterAuth({
 		cookiePrefix: slugify(env.APP_NAME),
 	},
 
+	rateLimit: {
+		window: 15 * 60 * 1000, // 15 minutes
+		max: 100, // max requests per window per IP
+	},
+
 	// Authentication secret
 	secret: env.BETTER_AUTH_SECRET,
 
 	// Base URL
 	baseURL: env.BETTER_AUTH_URL,
+	trustedOrigins: Array.from(
+		new Set([env.BETTER_AUTH_URL ?? "", env.NEXT_PUBLIC_APP_URL ?? ""]),
+	),
 });
 
 // Export types for use throughout the application

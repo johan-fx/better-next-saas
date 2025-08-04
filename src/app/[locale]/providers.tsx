@@ -1,16 +1,22 @@
 "use client";
 
 import { AuthUIProvider } from "@daveyplate/better-auth-ui";
-import Link from "next/link";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useAuthUILocalizations } from "@/modules/auth/hooks/use-auth-ui-localizations";
+import { Link } from "@/modules/i18n/navigation";
+import { useTRPC } from "@/trpc/client";
 
-export function Providers({ children }: { children: ReactNode }) {
+export function ClientProviders({ children }: { children: ReactNode }) {
 	const router = useRouter();
+	const trpc = useTRPC();
+	const { data: socialProviders } = useSuspenseQuery(
+		trpc.auth.socialProviders.queryOptions(),
+	);
 
 	// Get all authUI translations using the custom hook
 	const localization = useAuthUILocalizations();
@@ -48,8 +54,9 @@ export function Providers({ children }: { children: ReactNode }) {
 					customRoles: [],
 				}}
 				localization={localization}
-				multiSession
-				magicLink
+				social={{
+					providers: socialProviders ?? [],
+				}}
 			>
 				{children}
 				<Toaster />

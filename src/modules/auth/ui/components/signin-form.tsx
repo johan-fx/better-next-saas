@@ -52,7 +52,7 @@ interface SigninFormProps {
 export function SigninForm({ onSubmit, isLoading }: SigninFormProps) {
 	const [showPassword, setShowPassword] = useState(false);
 
-	const t = useTranslations("Auth");
+	const t = useTranslations("auth");
 
 	// Create Zod schema with translations
 	const signinSchema = createSigninSchema(t);

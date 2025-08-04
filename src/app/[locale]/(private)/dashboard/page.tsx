@@ -18,7 +18,7 @@ export default async function DashboardPage({ params }: Props) {
 	setRequestLocale(locale);
 
 	// Get translations
-	const t = await getTranslations("Dashboard");
+	const t = await getTranslations("dashboard");
 
 	return (
 		<div className="flex-1 space-y-4 p-8 pt-6">

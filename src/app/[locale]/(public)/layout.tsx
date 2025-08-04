@@ -21,10 +21,5 @@ export default async function PublicLayout({ children, params }: Props) {
 	// Enable static rendering for this locale
 	setRequestLocale(locale);
 
-	return (
-		<>
-			<PublicHeader />
-			{children}
-		</>
-	);
+	return <>{children}</>;
 }

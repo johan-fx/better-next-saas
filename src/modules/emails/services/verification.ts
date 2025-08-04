@@ -1,5 +1,8 @@
+import "server-only";
+
 import { render } from "@react-email/render";
 import { env } from "@/lib/env";
+import { getLocaleTranslations, isLocaleSupported } from "@/modules/i18n/utils";
 import { EMAIL_CONFIG } from "../config";
 import { getEmailProvider } from "../providers";
 import EmailVerification from "../templates/email-verification";
@@ -24,11 +27,6 @@ export async function sendVerificationEmail({
 	locale = "en",
 }: SendVerificationEmailOptions): Promise<void> {
 	try {
-		// Import the translation utilities here to avoid client-side issues
-		const { getLocaleTranslations, isLocaleSupported } = await import(
-			"@/modules/i18n/utils"
-		);
-
 		// Determine the locale to use
 		const validLocale = isLocaleSupported(locale) ? locale : "en";
 

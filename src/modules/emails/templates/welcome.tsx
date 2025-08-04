@@ -47,13 +47,13 @@ interface WelcomeEmailProps {
 	 * Pre-translated text content
 	 * This object contains all the translated strings for the email
 	 */
-	translations?: typeof enMessages.Email.welcome;
+	translations?: typeof enMessages.email.welcome;
 }
 
 // Translation mapping - now sourced from message files
 const availableTranslations = {
-	en: enMessages.Email.welcome,
-	es: esMessages.Email.welcome,
+	en: enMessages.email.welcome,
+	es: esMessages.email.welcome,
 };
 
 /**

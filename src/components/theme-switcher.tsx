@@ -13,7 +13,7 @@ import {
 
 export default function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
-	const t = useTranslations("Common");
+	const t = useTranslations("common");
 
 	// Get the appropriate icon based on current theme
 	const getThemeIcon = () => {
