@@ -37,6 +37,15 @@ export default async function PrivateLayout({ children, params }: Props) {
 		redirect(`/${locale}/auth/sign-in`);
 	}
 
+	// Redirect to welcome if user has no organizations in order to create one
+	const organizations = await auth.api.listOrganizations({
+		headers: await headers(),
+	});
+
+	if (!organizations?.length) {
+		redirect(`/${locale}/auth/welcome`);
+	}
+
 	return (
 		<SidebarProvider>
 			<MainSidebar />

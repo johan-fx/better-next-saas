@@ -39,7 +39,6 @@ export const user = pgTable("user", {
 		.$defaultFn(() => false)
 		.notNull(),
 	image: text("image"),
-	language: text("language").notNull().default(defaultLocale),
 	createdAt: timestamp("created_at")
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
@@ -50,6 +49,7 @@ export const user = pgTable("user", {
 	banned: boolean("banned"),
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires"),
+	language: text("language").default("en"),
 });
 
 export const session = pgTable("session", {
@@ -65,6 +65,7 @@ export const session = pgTable("session", {
 		.references(() => user.id, { onDelete: "cascade" }),
 	impersonatedBy: text("impersonated_by"),
 	activeOrganizationId: text("active_organization_id"),
+	activeTeamId: text("active_team_id"),
 });
 
 export const account = pgTable("account", {
@@ -116,7 +117,6 @@ export const member = pgTable("member", {
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	role: text("role").default("member").notNull(),
-	teamId: text("team_id"),
 	createdAt: timestamp("created_at").notNull(),
 });
 
@@ -143,6 +143,15 @@ export const team = pgTable("team", {
 		.references(() => organization.id, { onDelete: "cascade" }),
 	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at"),
+});
+
+export const teamMember = pgTable("team_member", {
+	id: text("id").primaryKey(),
+	teamId: text("team_id").notNull(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	createdAt: timestamp("created_at"),
 });
 
 // User Preferences table - stores user preferences per organization (MULTI-TENANT)
@@ -199,3 +208,5 @@ export type NewUserPreferences = typeof userPreference.$inferInsert;
 // New multi-tenant table types
 export type Team = typeof team.$inferSelect;
 export type NewTeam = typeof team.$inferInsert;
+export type TeamMember = typeof teamMember.$inferSelect;
+export type NewTeamMember = typeof teamMember.$inferInsert;

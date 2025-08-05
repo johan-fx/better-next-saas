@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@/modules/i18n/navigation";
 
 export const SignInView = () => {
-	const t = useTranslations("auth");
+	const t = useTranslations("authUI");
+	const tCommon = useTranslations("common");
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -27,10 +28,10 @@ export const SignInView = () => {
 			</Card>
 
 			<div className="text-center text-sm text-muted-foreground text-balance space-x-1 *:[a]:hover:text-primary *:[a]:underline *:[a]:underline-offset-4">
-				<span>{t("termsText")}</span>
-				<Link href={"/terms"}>{t("termsOfService")}</Link>
-				<span>{t("and")}</span>
-				<Link href={"/privacy"}>{t("privacyPolicy")}</Link>
+				<span>{t("BY_CONTINUING_YOU_AGREE")}</span>
+				<Link href={"/terms"}>{t("TERMS_OF_SERVICE")}</Link>
+				<span> {tCommon("and")} </span>
+				<Link href={"/privacy"}>{t("PRIVACY_POLICY")}</Link>
 			</div>
 		</div>
 	);

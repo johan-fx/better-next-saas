@@ -18,7 +18,8 @@
     "learnMore": "Learn More",
     "lightTheme": "Light",
     "systemTheme": "System",
-    "darkTheme": "Dark"
+    "darkTheme": "Dark",
+    "and": "and"
   },
   "navigation": {
     "home": "Home",
@@ -33,12 +34,6 @@
     "organization": "Organization",
     "members": "Members",
     "general": "General"
-  },
-  "auth": {
-    "termsText": "By clicking continue, you agree to our",
-    "termsOfService": "Terms of Service",
-    "and": "and",
-    "privacyPolicy": "Privacy Policy"
   },
   "homePage": {
     "title": "Welcome to this boilerplate",
@@ -134,6 +129,31 @@
     "somethingWentWrong": "Something went wrong",
     "tryAgain": "Please try again",
     "contactSupport": "Contact support if the problem persists"
+  },
+  "welcome": {
+    "organization": {
+      "description": "Create your initial organization to get started with the platform.",
+      "form": {
+        "validation": {
+          "nameRequired": "Organization name is required",
+          "nameMaxLength": "Please use 32 characters at maximum",
+          "slugRequired": "Organization slug is required",
+          "slugMaxLength": "Please use 48 characters at maximum",
+          "slugFormat": "Slug can only contain lowercase letters, numbers, and hyphens"
+        },
+        "errors": {
+          "slugVerificationFailed": "Failed to verify slug availability. Please try again.",
+          "slugTaken": "This slug is already taken. Please choose a different one.",
+          "createFailed": "Failed to create organization",
+          "unexpectedError": "An unexpected error occurred. Please try again."
+        },
+        "status": {
+          "checkingAvailability": "Checking availability...",
+          "slugAvailable": "This slug is available",
+          "slugTaken": "This slug is already taken"
+        }
+      }
+    }
   },
   "authUI": {
     "SLUG_DOES_NOT_MATCH": "The slug does not match",

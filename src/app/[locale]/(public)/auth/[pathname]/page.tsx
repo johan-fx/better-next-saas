@@ -1,10 +1,12 @@
 import { AuthCard } from "@daveyplate/better-auth-ui";
 import { authViewPaths } from "@daveyplate/better-auth-ui/server";
+import type { Organization } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { SignInView } from "@/modules/auth/ui/views/signin-view";
 import { SignUpView } from "@/modules/auth/ui/views/signup-view";
+import { WelcomeView } from "@/modules/auth/ui/views/welcome-view";
 
 export function generateStaticParams() {
 	return Object.values(authViewPaths).map((pathname) => ({ pathname }));
@@ -16,24 +18,23 @@ export default async function AuthPage({
 	params: Promise<{ pathname: string }>;
 }) {
 	const { pathname } = await params;
+	let organizations = null;
 
-	console.group("---AuthPage---");
-	console.log("pathname:", pathname);
-
-	// **EXAMPLE** SSR route protection for /auth/settings
-	// NOTE: This opts /auth/settings out of static rendering
+	// NOTE: This opts certain routes out of static rendering
 	// It already handles client side protection via useAuthenticate
-	if (pathname === "settings") {
+	if (["settings", "welcome"].includes(pathname)) {
 		const sessionData = await auth.api.getSession({
 			headers: await headers(),
 		});
 
-		console.log("sessionData:", sessionData);
-		console.groupEnd();
+		if (!sessionData) {
+			redirect(`/auth/sign-in?redirectTo=/auth/${pathname}`);
+		}
 
-		if (!sessionData) redirect("/auth/sign-in?redirectTo=/auth/settings");
+		organizations = await auth.api.listOrganizations({
+			headers: await headers(),
+		});
 	}
-	console.groupEnd();
 
 	if (pathname === "sign-in") {
 		return <SignInView />;
@@ -41,6 +42,10 @@ export default async function AuthPage({
 
 	if (pathname === "sign-up") {
 		return <SignUpView />;
+	}
+
+	if (pathname === "welcome") {
+		return <WelcomeView organizations={organizations as Organization[]} />;
 	}
 
 	return (

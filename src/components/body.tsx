@@ -1,6 +1,8 @@
+import { isServer } from "@tanstack/react-query";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
@@ -18,9 +20,15 @@ type Props = {
 };
 
 export const Body = async ({ children }: Props) => {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
+	let session = null;
+
+	if (isServer) {
+		session = await auth.api.getSession({
+			headers: await headers(),
+		});
+	} else {
+		session = await authClient.getSession();
+	}
 
 	return (
 		<body

@@ -28,6 +28,7 @@ export async function authMiddleware(
 	});
 
 	if (!sessionCookie) {
+		console.log("🔴 No session cookie found, redirecting to sign-in");
 		const redirectTo = request.nextUrl.pathname + request.nextUrl.search;
 		return NextResponse.redirect(
 			new URL(`/auth/sign-in?redirectTo=${redirectTo}`, request.url),

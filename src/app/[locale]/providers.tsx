@@ -32,6 +32,12 @@ export function ClientProviders({ children }: { children: ReactNode }) {
 					router.refresh();
 				}}
 				Link={Link}
+				changeEmail={false}
+				deleteUser={{ verification: true }}
+				redirectTo="/auth/welcome"
+				settings={{
+					basePath: "/account",
+				}}
 				credentials={{
 					confirmPassword: true,
 					rememberMe: true,
@@ -41,7 +47,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
 					},
 				}}
 				avatar={{
-					upload: async (fileToUpload) => {
+					upload: async (fileToUpload: File) => {
 						// Your upload logic
 						console.log("upload", fileToUpload);
 						return "";
@@ -51,7 +57,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
 				}}
 				organization={{
 					logo: {
-						upload: async (fileToUpload) => {
+						upload: async (fileToUpload: File) => {
 							// Your upload logic
 							console.log("upload", fileToUpload);
 							return "";

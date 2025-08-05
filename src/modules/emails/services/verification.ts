@@ -1,5 +1,3 @@
-import "server-only";
-
 import { render } from "@react-email/render";
 import { env } from "@/lib/env";
 import { getLocaleTranslations, isLocaleSupported } from "@/modules/i18n/utils";

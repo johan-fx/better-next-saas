@@ -3,8 +3,6 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
 import slugify from "slugify";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
-import { organizationCreationHook } from "@/modules/auth/server/lib/organization-creation-hook";
-import { userCreationHook } from "@/modules/auth/server/lib/user-creation-hook";
 import {
 	sendInvitationEmail,
 	sendPasswordResetEmail,
@@ -64,7 +62,7 @@ export const auth = betterAuth({
 						},
 					};
 				},
-				after: userCreationHook,
+				// after: userCreationHook,
 			},
 		},
 	},
@@ -101,22 +99,24 @@ export const auth = betterAuth({
 
 			// Organization creation hooks
 			organizationCreation: {
-				afterCreate: organizationCreationHook,
+				// afterCreate: organizationCreationHook,
 			},
 
 			// Invitation email configuration
-			sendInvitationEmail: async (data) => {
+			sendInvitationEmail: async (data, request) => {
 				// Build the invitation link
 				const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/accept-invitation/${data.id}`;
+				const { name, email, language } = data.inviter.user as schema.User;
 
 				// Send the invitation email using the new template
 				await sendInvitationEmail({
 					to: data.email,
 					organizationName: data.organization.name,
-					inviterName: data.inviter.user.name || "A team member",
-					inviterEmail: data.inviter.user.email,
+					inviterName: name ?? "A team member",
+					inviterEmail: email,
 					role: data.role,
 					inviteLink,
+					locale: language ?? getPreferredLanguage(request),
 				});
 			},
 		}),
