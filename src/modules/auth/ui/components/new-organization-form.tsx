@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, CheckCircle, Loader, Loader2, X, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import * as z from "zod";
@@ -37,6 +37,7 @@ export const NewOrganizationForm = () => {
 	const [slugStatus, setSlugStatus] = useState<SlugStatus | null>(null);
 
 	const router = useRouter();
+	const [isPending, startTransition] = useTransition();
 
 	// Organization creation schema with slug validation
 	const organizationSchema = z.object({
@@ -159,11 +160,19 @@ export const NewOrganizationForm = () => {
 				name: data.name,
 				slug: data.slug,
 				keepCurrentActiveOrganization: false,
+				metadata: {
+					isDefault: true,
+				},
 			});
 
 			if (organization.data) {
-				// Organization created successfully, redirect to account
-				router.push("/account");
+				await authClient.organization.setActive({
+					organizationId: organization.data.id,
+				});
+
+				startTransition(() => {
+					router.replace("/account");
+				});
 			} else if (organization.error) {
 				// Handle specific errors
 				const errorMessage = organization.error.message;
@@ -274,9 +283,11 @@ export const NewOrganizationForm = () => {
 				<Button
 					type="submit"
 					className="w-full mt-4"
-					disabled={isLoading || isCheckingSlug || slugStatus === "taken"}
+					disabled={
+						isLoading || isCheckingSlug || isPending || slugStatus === "taken"
+					}
 				>
-					{isLoading ? (
+					{isLoading || isPending ? (
 						<Loader2 className="mr-2 size-4 animate-spin" />
 					) : (
 						t("CREATE_ORGANIZATION")

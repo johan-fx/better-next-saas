@@ -1,8 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
+import { eq, inArray } from "drizzle-orm";
 import slugify from "slugify";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
+import { getDefaultOrganization } from "@/modules/auth/server/utils";
 import {
 	sendInvitationEmail,
 	sendPasswordResetEmail,
@@ -10,7 +12,6 @@ import {
 } from "@/modules/emails";
 import { defaultLocale } from "@/modules/i18n/routing";
 import { getPreferredLanguage } from "@/modules/i18n/utils";
-import { ac, roles } from "@/modules/rbac/permissions";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { env } from "./env";
@@ -46,10 +47,6 @@ export const auth = betterAuth({
 
 	// Database hooks
 	databaseHooks: {
-		// Note: User preferences are created when they join organizations
-		// since preferences are per-organization in this multi-tenant setup
-
-		// Create default organization for new users not coming from invitations
 		user: {
 			create: {
 				before: async (user, ctx) => {
@@ -62,7 +59,22 @@ export const auth = betterAuth({
 						},
 					};
 				},
-				// after: userCreationHook,
+			},
+		},
+		session: {
+			create: {
+				before: async (session) => {
+					const defaultOrganization = await getDefaultOrganization(
+						session.userId,
+					);
+
+					return {
+						data: {
+							...session,
+							activeOrganizationId: defaultOrganization?.id ?? undefined,
+						},
+					};
+				},
 			},
 		},
 	},
@@ -70,17 +82,9 @@ export const auth = betterAuth({
 	// Plugins
 	plugins: [
 		// Admin plugin for system-wide user management
-		admin({
-			// Access control configuration for admin operations
-			ac,
-			roles,
-		}),
+		admin(),
 
 		organization({
-			// Access control configuration
-			ac,
-			roles,
-
 			// Teams configuration
 			teams: {
 				enabled: true,

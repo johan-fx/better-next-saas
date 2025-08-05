@@ -61,11 +61,6 @@ const MainSidebar = () => {
 			url: "/dashboard",
 			icon: Home,
 		},
-		{
-			title: "RBAC Demo",
-			url: "/rbac-demo",
-			icon: Shield,
-		},
 	];
 
 	const organizationItems = [

@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.6",
+    "@eslint/eslintrc": "^3.3.1",
     "@playwright/test": "^1.53.2",
     "@tailwindcss/postcss": "^4",
     "@types/negotiator": "^0.6.4",

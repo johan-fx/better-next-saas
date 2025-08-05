@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -8,22 +7,9 @@ import { routing } from "@/modules/i18n/routing";
 import { TRPCReactProvider } from "@/trpc/client";
 import "@/styles/globals.css";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { headers } from "next/headers";
 import { Body } from "@/components/body";
-import { auth } from "@/lib/auth";
-import { cn } from "@/lib/utils";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { ClientProviders } from "./providers";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
 	title: "Better SaaS Boilerplate",
