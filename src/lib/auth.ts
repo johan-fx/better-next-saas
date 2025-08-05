@@ -1,7 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
-import { eq, inArray } from "drizzle-orm";
 import slugify from "slugify";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
 import { getDefaultOrganization } from "@/modules/auth/server/utils";

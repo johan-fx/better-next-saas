@@ -1,5 +1,5 @@
 import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
-import { Organization } from "better-auth/plugins";
+import type { Organization } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
