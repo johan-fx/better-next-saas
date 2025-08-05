@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, LogOut, Shield, User } from "lucide-react";
+import { Building, Home, LogOut, Shield, User, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -18,7 +18,8 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { Link } from "@/modules/i18n/navigation";
+import { Link, usePathname } from "@/modules/i18n/navigation";
+import { Logo } from "./logo";
 
 /**
  * MainSidebar Component
@@ -26,7 +27,8 @@ import { Link } from "@/modules/i18n/navigation";
  * The main navigation sidebar for the private/authenticated sections.
  * Features:
  * - Header with app branding
- * - Content section with navigation items (Dashboard)
+ * - Content section with navigation items (Dashboard, Account, Organization)
+ * - Active state highlighting based on current URL
  * - Footer with user info and sign out functionality
  * - Uses shadcn Sidebar components
  * - Internationalization support
@@ -35,7 +37,22 @@ import { Link } from "@/modules/i18n/navigation";
 const MainSidebar = () => {
 	const t = useTranslations("navigation");
 	const router = useRouter();
+	const pathname = usePathname();
 	const { data: session } = authClient.useSession();
+
+	/**
+	 * Check if a menu item should be marked as active
+	 * @param url - The menu item URL to check against current pathname
+	 * @returns boolean indicating if the item is active
+	 */
+	const isActiveItem = (url: string): boolean => {
+		// For exact matches like "/dashboard"
+		if (pathname === url) {
+			return true;
+		}
+
+		return false;
+	};
 
 	// Navigation items for the sidebar content
 	const items = [
@@ -47,6 +64,32 @@ const MainSidebar = () => {
 		{
 			title: "RBAC Demo",
 			url: "/rbac-demo",
+			icon: Shield,
+		},
+	];
+
+	const organizationItems = [
+		{
+			title: t("settings"),
+			url: "/account/organization",
+			icon: Building,
+		},
+		{
+			title: t("members"),
+			url: "/account/organization/members",
+			icon: Users,
+		},
+	];
+
+	const accountItems = [
+		{
+			title: t("settings"),
+			url: "/account",
+			icon: User,
+		},
+		{
+			title: t("security"),
+			url: "/account/security",
 			icon: Shield,
 		},
 	];
@@ -73,33 +116,64 @@ const MainSidebar = () => {
 	};
 
 	return (
-		<Sidebar>
+		<Sidebar className="border-none">
 			{/* Header Section */}
-			<SidebarHeader className="border-b border-border">
-				<div className="flex items-center space-x-2 px-2 py-2">
-					<div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-						<span className="text-primary-foreground font-bold text-sm">
-							DP
-						</span>
-					</div>
-					<div className="flex flex-col">
-						<span className="font-semibold text-sm">Deck Pilot</span>
-						<span className="text-xs text-muted-foreground">
-							Project Management
-						</span>
-					</div>
+			<SidebarHeader>
+				<div className="flex items-center justify-between px-2 py-2">
+					<Logo />
+					<span className="text-xs text-muted-foreground">v1.0</span>
 				</div>
 			</SidebarHeader>
 
 			{/* Content Section */}
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Navigation</SidebarGroupLabel>
+					<SidebarGroupLabel className="uppercase">
+						{t("general")}
+					</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
+									<SidebarMenuButton asChild isActive={isActiveItem(item.url)}>
+										<Link href={item.url}>
+											<item.icon className="h-4 w-4" />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarGroupLabel className="uppercase">
+						{t("account")}
+					</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{accountItems.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild isActive={isActiveItem(item.url)}>
+										<Link href={item.url}>
+											<item.icon className="h-4 w-4" />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarGroupLabel className="uppercase">
+						{t("organization")}
+					</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{organizationItems.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild isActive={isActiveItem(item.url)}>
 										<Link href={item.url}>
 											<item.icon className="h-4 w-4" />
 											<span>{item.title}</span>
@@ -113,7 +187,7 @@ const MainSidebar = () => {
 			</SidebarContent>
 
 			{/* Footer Section */}
-			<SidebarFooter className="border-t border-border">
+			<SidebarFooter>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<div className="flex items-center justify-between p-2">

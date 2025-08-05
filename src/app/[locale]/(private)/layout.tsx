@@ -40,8 +40,10 @@ export default async function PrivateLayout({ children, params }: Props) {
 	return (
 		<SidebarProvider>
 			<MainSidebar />
-			<main className="flex flex-col h-screen w-screen bg-muted">
-				{children}
+			<main className="flex flex-col min-h-screen w-screen p-2">
+				<div className="flex flex-col flex-1 bg-background rounded-lg border shadow-sm">
+					{children}
+				</div>
 			</main>
 			<Toaster />
 		</SidebarProvider>

@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
 import slugify from "slugify";
+import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
 import { organizationCreationHook } from "@/modules/auth/server/lib/organization-creation-hook";
 import { userCreationHook } from "@/modules/auth/server/lib/user-creation-hook";
 import {
@@ -134,13 +135,8 @@ export const auth = betterAuth({
 
 		// Email sending function
 		sendVerificationEmail: async ({ user, url }, request) => {
-			const preferredLanguage = getPreferredLanguage(request);
-
-			console.log("sendVerificationEmail", {
-				user,
-				url,
-				preferredLanguage,
-			});
+			const preferredLanguage =
+				(user as schema.User).language ?? getPreferredLanguage(request);
 
 			await sendVerificationEmail({
 				to: user.email,
@@ -155,7 +151,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true, // Enable email verification
-		minPasswordLength: 5,
+		minPasswordLength: MIN_PASSWORD_LENGTH,
 
 		// Password reset configuration
 		sendResetPassword: async ({ user, url }, request) => {

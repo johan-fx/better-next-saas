@@ -8,6 +8,10 @@ import { routing } from "@/modules/i18n/routing";
 import { TRPCReactProvider } from "@/trpc/client";
 import "@/styles/globals.css";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { headers } from "next/headers";
+import { Body } from "@/components/body";
+import { auth } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { ClientProviders } from "./providers";
 
@@ -59,15 +63,13 @@ export default async function LocaleLayout({ children, params }: Props) {
 		<NuqsAdapter>
 			<TRPCReactProvider>
 				<html lang={locale} suppressHydrationWarning>
-					<body
-						className={`${geistSans.variable} ${geistMono.variable} flex min-h-svh flex-col antialiased`}
-					>
+					<Body>
 						<NextIntlClientProvider>
 							<HydrationBoundary state={dehydrate(queryClient)}>
 								<ClientProviders>{children}</ClientProviders>
 							</HydrationBoundary>
 						</NextIntlClientProvider>
-					</body>
+					</Body>
 				</html>
 			</TRPCReactProvider>
 		</NuqsAdapter>

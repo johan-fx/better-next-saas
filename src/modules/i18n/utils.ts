@@ -55,10 +55,39 @@ export const resolveLocaleFromHeaders = (
 
 	return matchedLocale as SupportedLocale;
 };
+
 export function getPreferredLanguage(
 	request: Request | undefined,
 ): SupportedLocale {
-	return (
-		resolveLocaleFromHeaders(request?.headers ?? new Headers()) ?? defaultLocale
+	// If no request is provided, return default locale
+	if (!request) {
+		return defaultLocale;
+	}
+
+	// Parse cookies from the request
+	const cookieHeader = request.headers.get("cookie");
+	if (!cookieHeader) {
+		return defaultLocale;
+	}
+
+	// Extract the NEXT_LOCALE cookie value
+	const cookies = cookieHeader.split(";").map((cookie) => cookie.trim());
+	const nextLocaleCookie = cookies.find((cookie) =>
+		cookie.startsWith("NEXT_LOCALE="),
 	);
+
+	if (!nextLocaleCookie) {
+		return defaultLocale;
+	}
+
+	// Get the cookie value
+	const cookieValue = nextLocaleCookie.split("=")[1];
+
+	// Check if the cookie value is a supported locale
+	if (cookieValue && isLocaleSupported(cookieValue)) {
+		return cookieValue;
+	}
+
+	// Fall back to default locale if cookie value is invalid
+	return defaultLocale;
 }

@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
 import { useAuthUILocalizations } from "@/modules/auth/hooks/use-auth-ui-localizations";
 import { Link } from "@/modules/i18n/navigation";
 import { useTRPC } from "@/trpc/client";
@@ -27,11 +28,6 @@ export function ClientProviders({ children }: { children: ReactNode }) {
 				authClient={authClient}
 				navigate={router.push}
 				replace={router.replace}
-				redirectTo="/account/auth/settings"
-				settings={{
-					url: "/account/auth/settings",
-					basePath: "/account/auth/",
-				}}
 				onSessionChange={() => {
 					router.refresh();
 				}}
@@ -40,6 +36,18 @@ export function ClientProviders({ children }: { children: ReactNode }) {
 					confirmPassword: true,
 					rememberMe: true,
 					forgotPassword: true,
+					passwordValidation: {
+						minLength: MIN_PASSWORD_LENGTH,
+					},
+				}}
+				avatar={{
+					upload: async (fileToUpload) => {
+						// Your upload logic
+						console.log("upload", fileToUpload);
+						return "";
+					},
+					size: 256,
+					extension: "png",
 				}}
 				organization={{
 					logo: {

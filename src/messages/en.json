@@ -27,7 +27,12 @@
     "settings": "Settings",
     "logout": "Logout",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "account": "Account",
+    "security": "Security",
+    "organization": "Organization",
+    "members": "Members",
+    "general": "General"
   },
   "auth": {
     "termsText": "By clicking continue, you agree to our",

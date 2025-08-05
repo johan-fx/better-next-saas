@@ -1,5 +1,4 @@
 import { setRequestLocale } from "next-intl/server";
-import { PublicHeader } from "@/components/public-header";
 
 type Props = {
 	children: React.ReactNode;

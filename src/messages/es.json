@@ -27,7 +27,12 @@
     "settings": "Configuración",
     "logout": "Cerrar Sesión",
     "login": "Iniciar Sesión",
-    "signup": "Registrarse"
+    "signup": "Registrarse",
+    "account": "Cuenta",
+    "security": "Seguridad",
+    "organization": "Organización",
+    "members": "Miembros",
+    "general": "General"
   },
   "auth": {
     "termsText": "Al hacer clic en continuar, aceptas nuestros",

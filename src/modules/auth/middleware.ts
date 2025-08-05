@@ -1,8 +1,9 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
+import slugify from "slugify";
 
 // Define protected routes that need authentication
-const protectedRoutes = ["/dashboard", "/auth/settings"];
+const protectedRoutes = ["/dashboard", "/auth/settings", "/account"];
 
 // Helper function to check if a route is protected
 function isProtectedRoute(pathname: string): boolean {
@@ -22,7 +23,9 @@ export async function authMiddleware(
 	}
 
 	// Check cookie for optimistic redirects for protected routes
-	const sessionCookie = getSessionCookie(request);
+	const sessionCookie = getSessionCookie(request, {
+		cookiePrefix: slugify(process.env.APP_NAME ?? "my-app"),
+	});
 
 	if (!sessionCookie) {
 		const redirectTo = request.nextUrl.pathname + request.nextUrl.search;

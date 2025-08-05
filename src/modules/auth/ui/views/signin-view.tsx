@@ -21,7 +21,7 @@ export const SignInView = () => {
 					/>
 
 					<div className="bg-primary relative hidden md:flex flex-col gap-y-4 justify-center items-center rounded-sm">
-						<IsoLogo width={150} height="auto" color="white" />
+						<IsoLogo width={150} height="100%" color="white" />
 					</div>
 				</CardContent>
 			</Card>

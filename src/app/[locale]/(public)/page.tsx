@@ -12,8 +12,8 @@ export default async function HomePage({ params }: Props) {
 	setRequestLocale(locale);
 
 	// Get translations for this page
-	const t = await getTranslations("HomePage");
-	const common = await getTranslations("Common");
+	const t = await getTranslations("homePage");
+	const common = await getTranslations("common");
 
 	return (
 		<div className="grid grid-rows-[1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

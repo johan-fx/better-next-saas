@@ -20,7 +20,7 @@ export const SignUpView = () => {
 						}}
 					/>
 					<div className="bg-primary relative hidden md:flex flex-col gap-y-4 justify-center items-center">
-						<IsoLogo width={150} height="auto" color="white" />
+						<IsoLogo width={150} height="100%" color="white" />
 					</div>
 				</CardContent>
 			</Card>
