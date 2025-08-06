@@ -170,20 +170,13 @@ A comprehensive, production-ready Next.js boilerplate built with the latest and 
 
    ```env
    # Database
-   DATABASE_URL="postgresql://username:password@localhost:5432/deck_pilot"
+   DATABASE_URL="postgresql://username:password@localhost:5432/better-saas"
    
    # Better Auth
    BETTER_AUTH_SECRET="your-secret-key-at-least-32-characters-long"
    BETTER_AUTH_URL="http://localhost:3000"
    
-   # OAuth (optional)
-   GITHUB_CLIENT_ID="your-github-client-id"
-   GITHUB_CLIENT_SECRET="your-github-client-secret"
-   GOOGLE_CLIENT_ID="your-google-client-id"
-   GOOGLE_CLIENT_SECRET="your-google-client-secret"
-   
    # App Configuration
-   NODE_ENV="development"
    NEXT_PUBLIC_APP_URL="http://localhost:3000"
    ```
 
@@ -228,10 +221,12 @@ This boilerplate follows a **hexagonal (modular) architecture** with **Better Au
 │   │   │   │   ├── layout.tsx        # Authentication wrapper + sidebar
 │   │   │   │   └── dashboard/        # Protected dashboard section
 │   │   │   │       └── page.tsx      # Main dashboard page
-│   │   │   └── auth/                 # 🔓 Public 
-│   │   ├── api/             # API routes
-│   │   │   ├── auth/        # Better Auth endpoints
-│   │   │   └── trpc/         # tRPC endpoints
+│   │   │   ├── (public)/            # 🔒 Public Route Group
+│   │   │   │   └── auth/    # Protected dashboard section
+│   │   └── api/             # API routes
+│   │       ├── auth/        # Better Auth endpoints
+│   │       └── trpc/         # tRPC endpoints
+│   ├── styles/                 # Core configurations
 │   │   └── globals.css      # Global styles
 │   ├── lib/                 # Core configurations
 │   │   ├── auth.ts          # Better Auth server configuration
@@ -261,100 +256,15 @@ This boilerplate follows a **hexagonal (modular) architecture** with **Better Au
 
 - **`src/lib/auth.ts`** - Better Auth server configuration with Drizzle adapter
 - **`src/lib/auth-client.ts`** - Better Auth client configuration for React hooks
-- **`src/orpc/router.ts`** - oRPC router with public/private procedure abstractions
+- **`src/trpc/routers/_app.ts`** - tRPC router with public/private procedure abstractions
 - **`src/app/api/auth/[...all]/route.ts`** - Better Auth API route handler
-- **`src/app/api/rpc/[[...rest]]/route.ts`** - oRPC API route handler with auth context
+- **`src/app/api/trpc/[trpc]/route.ts`** - tRPC API route handler with auth context
 
 ### **Database & Schema:**
 
 - **`src/lib/db/schema.ts`** - Drizzle schema for Better Auth tables
 - **`drizzle.config.ts`** - Database configuration and migration settings
 - **`src/lib/env.ts`** - Type-safe environment variable validation
-
-### **oRPC + Better Auth Integration:**
-
-- **`src/lib/orpc-client.ts`** - Client optimized for SSR and client-side usage
-- **`src/lib/orpc-server.ts`** - Server-side client for direct procedure calls
-- **`src/orpc/index.ts`** - Main exports and comprehensive documentation
-
-## 🚀 Authentication Workflow
-
-### **1. Public Procedures**
-
-Available to all users (authenticated and unauthenticated):
-
-```typescript
-// Example: Get current session (returns null if not authenticated)
-import { client } from '@/lib/orpc-client'
-
-const session = await client.auth.getSession()
-// session: { user: User, session: Session } | null
-```
-
-### **2. Private Procedures**
-
-Require authentication, guaranteed user context:
-
-```typescript
-// Example: Get user profile (throws error if not authenticated)
-import { client } from '@/lib/orpc-client'
-
-const profile = await client.auth.getProfile()
-// profile: { user: User, session: Session } - always defined
-```
-
-### **3. Client-Side Authentication**
-
-```typescript
-'use client'
-import { useSession, signIn, signOut } from '@/lib/auth-client'
-
-export function AuthButton() {
-  const { data: session, isPending } = useSession()
-
-  if (isPending) return <div>Loading...</div>
-
-  if (session) {
-    return (
-      <div>
-        <p>Welcome, {session.user.name}!</p>
-        <button onClick={() => signOut()}>Sign Out</button>
-      </div>
-    )
-  }
-
-  return (
-    <button 
-      onClick={() => signIn.email({ 
-        email: 'user@example.com', 
-        password: 'password' 
-      })}
-    >
-      Sign In
-    </button>
-  )
-}
-```
-
-### **4. Server-Side Authentication**
-
-```typescript
-// In page components or server actions
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
-
-export default async function ProtectedPage() {
-  const session = await auth.api.getSession({
-    headers: await headers()
-  })
-
-  if (!session) {
-    redirect('/login')
-  }
-
-  return <div>Welcome, {session.user.name}!</div>
-}
-```
 
 ## 🗄️ Database Scripts
 
