@@ -1,3 +1,4 @@
+import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
@@ -27,16 +28,6 @@ export default async function PrivateLayout({ children, params }: Props) {
 	// Enable static rendering for this locale
 	setRequestLocale(locale);
 
-	// Check authentication status using Better Auth
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
-
-	// Redirect to sign-in if user is not authenticated
-	if (!session?.user) {
-		redirect(`/${locale}/auth/sign-in`);
-	}
-
 	// Redirect to welcome if user has no organizations in order to create one
 	const organizations = await auth.api.listOrganizations({
 		headers: await headers(),
@@ -47,14 +38,19 @@ export default async function PrivateLayout({ children, params }: Props) {
 	}
 
 	return (
-		<SidebarProvider>
-			<MainSidebar />
-			<main className="flex flex-col min-h-screen w-screen p-2">
-				<div className="flex flex-col flex-1 bg-background rounded-lg border shadow-sm">
-					{children}
-				</div>
-			</main>
-			<Toaster />
-		</SidebarProvider>
+		<>
+			<RedirectToSignIn />
+			<SignedIn>
+				<SidebarProvider>
+					<MainSidebar />
+					<main className="flex flex-col min-h-screen w-screen p-2">
+						<div className="flex flex-col flex-1 bg-background rounded-lg border shadow-sm">
+							{children}
+						</div>
+					</main>
+					<Toaster />
+				</SidebarProvider>
+			</SignedIn>
+		</>
 	);
 }

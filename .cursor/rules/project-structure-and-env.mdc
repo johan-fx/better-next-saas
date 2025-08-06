@@ -143,10 +143,10 @@ export default async function ProtectedPage() {
 ### Common Database Scripts
 
 ```bash
-npm run db:generate  # Generate migrations
-npm run db:migrate   # Apply migrations  
-npm run db:push      # Push schema (development)
-npm run db:studio    # Open Drizzle Studio
+pnpm db:generate  # Generate migrations
+pnpm db:migrate   # Apply migrations  
+pnpm db:push      # Push schema (development)
+pnpm db:studio    # Open Drizzle Studio
 ```
 
 ## 🌍 Internationalization
@@ -154,7 +154,7 @@ npm run db:studio    # Open Drizzle Studio
 ### Key Files
 
 - [middleware.ts](mdc:middleware.ts) - Locale detection and routing
-- [i18n/](mdc:src/i18n) - Configuration
+- [i18n/](mdc:src/modules/i18n) - Configuration
 - [messages/](mdc:src/messages) - Translation files
 
 ### URL Structure
@@ -193,7 +193,6 @@ import { env } from '../../../src/lib/env'
 
 - **NEVER** duplicate environment variable validation
 - **ALWAYS** import from `@/lib/env` for environment variables
-- **ALWAYS** use Better Auth context in oRPC procedures
 - **ALWAYS** follow the hexagonal architecture pattern
 - **ALWAYS** use TypeScript for type safety
 - **ALWAYS** validate environment variables with Zod in [env.ts](mdc:src/lib/env.ts)

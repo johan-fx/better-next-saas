@@ -13,8 +13,8 @@ alwaysApply: false
 - Each module should have clear separation: `ui/components/`, `ui/views/`, `lib/`, `types/`
 - Every `page.tsx` inside the `src/app/[locale]/{domain}/*` must contain only `views` from `src/modules/{domain}/ui/views`
 - Every `page.tsx` inside the `src/app/[locale]/(private)/{domain}/*` must contain only `views` from `src/modules/{domain}/ui/views`
-- **IMPORTANT:** Pages in `src/app/[locale]/(private)/**` are automatically protected by the layout authentication check
-- Reference example: [page.tsx](mdc:src/app/[locale]/auth/sign-up/page.tsx) [signup-view.tsx](mdc:src/modules/auth/ui/views/signup-view.tsx) [signup-form.tsx](mdc:src/modules/auth/ui/components/signup-form.tsx)
+- **IMPORTANT:** Pages in `src/app/[locale]/(private)/**` must implement per-page authentication using better-auth-ui components
+- Reference example: [page.tsx](mdc:src/app/[locale]/(private)/account/security/page.tsx) [security-view.tsx](mdc:src/modules/auth/ui/views/security-view.tsx) [new-organization-form.tsx](mdc:src/modules/auth/ui/components/new-organization-form.tsx)
 
 ### Component Structure
 
@@ -28,87 +28,76 @@ src/modules/{domain}/
 └── hooks/            # Custom React hooks
 
 src/app/[locale]/
-├── (private)/         # 🔒 Protected routes - authentication handled by layout
+├── (private)/         # 🔒 Protected routes - each page handles own authentication
 │   ├── {domain}/      # Feature-specific protected pages
-│   │   └── page.tsx   # Must use views from src/modules/{domain}/ui/views
-│   └── layout.tsx     # 🔒 Handles authentication for ALL private pages
-└── {domain}/          # Public routes
-    └── page.tsx       # Can use views from src/modules/{domain}/ui/views
+│   │   └── page.tsx   # Must use views from src/modules/{domain}/ui/views + auth components
+│   └── layout.tsx     # Layout wrapper (no authentication logic)
+└── (public)/          # Public routes
+    └── {domain}/      # Feature-specific public pages
+        └── page.tsx   # Can use views from src/modules/{domain}/ui/views
 ```
 
 ## Authentication Requirements (Better Auth)
 
-### Layout-Based Authentication Pattern
+### Per-Page Authentication Pattern
 
-**The project uses a centralized authentication approach:**
+**The project uses a per-page authentication approach using @daveyplate/better-auth-ui:**
 
-- `src/app/[locale]/(private)/layout.tsx` handles authentication for ALL private pages
-- Individual pages under `(private)` do NOT need authentication checks
-- The layout redirects unauthenticated users to sign-in automatically
+- Each protected page implements its own authentication check
+- Pages use `RedirectToSignIn` and `SignedIn` components for consistent auth behavior
+- The `RedirectToSignIn` component automatically redirects unauthenticated users
+- The `SignedIn` component renders content only for authenticated users
 
-### Private Layout Authentication (src/app/[locale]/(private)/layout.tsx)
+### Better Auth UI Components
 
 ```typescript
-export default async function PrivateLayout({ children, params }: Props) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui"
 
-  // 🔒 CENTRALIZED: Check authentication for all private pages
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  // Redirect to sign-in if user is not authenticated
-  if (!session?.user) {
-    redirect(`/${locale}/auth/sign-in`);
-  }
-
+export default function ProtectedPage() {
   return (
-    <SidebarProvider>
-      <MainSidebar />
-      <main className="flex flex-col h-screen w-screen bg-muted">
-        {children}
-      </main>
-      <Toaster />
-    </SidebarProvider>
-  );
+    <>
+      <RedirectToSignIn />
+      <SignedIn>
+        {/* Your protected content here */}
+        <YourDomainView />
+      </SignedIn>
+    </>
+  )
 }
 ```
 
-### Private Page Pattern (Clean & Simple)
+### How the Components Work
+
+- **`<RedirectToSignIn />`**: Automatically redirects unauthenticated users to the sign-in page
+- **`<SignedIn>`**: Renders its children only when the user is authenticated
+- These components handle all authentication logic internally
+- No manual session checks or redirect logic needed
+
+### Private Page Pattern (Per-Page Authentication)
 
 ```typescript
-// ✅ DO: Private pages are automatically protected by layout
-export default async function PrivatePage({ params }: { params: { locale: string } }) {
-  // No authentication check needed - layout handles it
-  // User is guaranteed to be authenticated here
-  
-  return <YourDomainView />
+// ✅ DO: Each private page handles its own authentication
+import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui"
+
+export default function PrivatePage() {
+  return (
+    <>
+      <RedirectToSignIn />
+      <SignedIn>
+        <YourDomainView />
+      </SignedIn>
+    </>
+  )
 }
 ```
 
 ### Authentication Best Practices
 
-- **NEVER** add authentication checks to individual pages under `(private)`
-- **ALWAYS** rely on the layout authentication for private pages
-- **ONLY** add custom authentication logic if you need specific role-based access
-- Use the layout pattern for consistent authentication across all private pages
-
-### Client-Side Authentication (for components)
-
-```typescript
-'use client'
-import { useSession } from '@/lib/auth-client'
-
-export function ClientComponent() {
-  const { data: session, isPending } = useSession()
-  
-  if (isPending) return <div>Loading...</div>
-  if (!session) return <div>Not authenticated</div>
-  
-  return <div>Welcome, {session.user.name}</div>
-}
-```
+- **ALWAYS** add `<RedirectToSignIn />` and `<SignedIn>` components to protected pages and components
+- **ALWAYS** wrap your protected content inside the `<SignedIn>` component
+- **NEVER** implement manual session checks when using better-auth-ui components
+- **CONSISTENT** pattern: Use the same authentication components across all protected pages
+- **ROLE-BASED** access can be implemented inside the `<SignedIn>` component if needed
 
 ## Form Development Standards
 
