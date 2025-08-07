@@ -9,7 +9,7 @@ import SubscriptionUpgradeEmail from "../templates/subscription-upgrade";
  * Handles rendering and sending internationalized subscription notification emails
  * Loads translations server-side and passes them to the template
  */
-export interface SendSubscriptionNotificationOptions {
+export interface SendSubscriptionUpgradeEmailOptions {
 	to: string;
 	userName: string;
 	dashboardUrl: string;
@@ -20,7 +20,7 @@ export interface SendSubscriptionNotificationOptions {
 	locale?: string;
 }
 
-export async function sendSubscriptionNotificationEmail({
+export async function sendSubscriptionUpgradeEmail({
 	to,
 	userName,
 	dashboardUrl,
@@ -29,7 +29,7 @@ export async function sendSubscriptionNotificationEmail({
 	billingCycle,
 	nextBillingDate,
 	locale = "en",
-}: SendSubscriptionNotificationOptions): Promise<void> {
+}: SendSubscriptionUpgradeEmailOptions): Promise<void> {
 	try {
 		// Import the translation utilities here to avoid client-side issues
 		const { getLocaleTranslations, isLocaleSupported } = await import(

@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 // import { sendSubscriptionNotificationEmail } from "@/modules/emails";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
-import { sendSubscriptionNotificationEmail } from "@/modules/emails";
+import { sendSubscriptionUpgradeEmail } from "@/modules/emails";
 
 export async function authorizeSubscription({
 	user,
@@ -129,7 +129,7 @@ export async function onSubscriptionComplete({
 			: plan.name;
 
 		// Send subscription notification email
-		await sendSubscriptionNotificationEmail({
+		await sendSubscriptionUpgradeEmail({
 			to: userEmail,
 			userName,
 			dashboardUrl: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
