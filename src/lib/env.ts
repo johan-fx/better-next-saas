@@ -22,9 +22,6 @@ const envSchema = z
 
 		EMAIL_VERIFICATION_TOKEN_EXPIRES_IN: z.number().int().positive().optional(),
 
-		// Email testing
-		MAILSLURP_API_KEY: z.string().optional(),
-
 		// MailDev Configuration (for E2E testing)
 		MAILDEV_WEB_URL: z
 			.string()
@@ -63,6 +60,9 @@ const envSchema = z
 		SMTP_USER: z.string().optional(),
 		SMTP_PASS: z.string().optional(),
 		SMTP_FROM: z.string().email("Invalid SMTP FROM email address").optional(),
+
+		STRIPE_SECRET_KEY: z.string().optional(),
+		STRIPE_WEBHOOK_SECRET: z.string().optional(),
 	})
 	.refine(
 		(data) => {
@@ -95,9 +95,6 @@ export const env = envSchema.parse({
 		process.env.EMAIL_VERIFICATION_TOKEN_EXPIRES_IN ?? "24",
 	),
 
-	// Email testing
-	MAILSLURP_API_KEY: process.env.MAILSLURP_API_KEY,
-
 	// MailDev Configuration
 	MAILDEV_WEB_URL: process.env.MAILDEV_WEB_URL,
 	MAILDEV_SMTP_HOST: process.env.MAILDEV_SMTP_HOST,
@@ -128,6 +125,10 @@ export const env = envSchema.parse({
 	SMTP_USER: process.env.SMTP_USER,
 	SMTP_PASS: process.env.SMTP_PASS,
 	SMTP_FROM: process.env.SMTP_FROM,
+
+	// Stripe payment processing
+	STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+	STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 });
 
 // Export the type for use in other files

@@ -11,10 +11,16 @@ import {
 	Preview,
 	Row,
 	Section,
+	Tailwind,
 	Text,
 } from "@react-email/components";
 // biome-ignore lint/correctness/noUnusedImports: This import is required for the email template to work
 import * as React from "react";
+
+import enMessages from "@/messages/en.json";
+import esMessages from "@/messages/es.json";
+import { TAILWIND_CONFIG } from "../config";
+import { createEmailVariables, replaceVariables } from "../utils/variables";
 
 interface EmailVerificationProps {
 	/**
@@ -41,250 +47,167 @@ interface EmailVerificationProps {
 	 * Expiration time in hours
 	 */
 	expirationHours?: number;
+	/**
+	 * User's preferred locale
+	 */
+	locale?: string;
+	/**
+	 * Pre-translated text content
+	 * This object contains all the translated strings for the email
+	 */
+	translations?: typeof enMessages.email.verification;
 }
 
+// Translation mapping - now sourced from message files
+const availableTranslations = {
+	en: enMessages.email.verification,
+	es: esMessages.email.verification,
+};
+
 /**
- * Email Verification Template
+ * Internationalized Email Verification Template (Props-based)
  *
  * Beautiful, responsive email template for email verification
- * Built with React Email components for maximum compatibility
+ * Supports multiple languages through pre-translated props
+ * This approach allows the email to work with react-email dev server
+ * since all translations are passed as props from the server-side code
  */
 export function EmailVerification({
 	userName = "there",
 	userEmail,
 	verificationUrl,
-	appName = "Deck Pilot",
+	appName = "My App",
 	logoUrl,
 	expirationHours = 24,
+	locale = "es",
+	translations: overrideTranslations,
 }: EmailVerificationProps) {
-	const previewText = `Verify your email address for ${appName}`;
+	const currentYear = new Date().getFullYear();
+	const translations =
+		overrideTranslations ||
+		availableTranslations[locale as keyof typeof availableTranslations];
+
+	// Variables for string interpolation
+	const variables = createEmailVariables({
+		appName,
+		userName,
+		userEmail,
+		expirationHours,
+		year: currentYear,
+	});
+
+	const previewText = replaceVariables(translations.subject, variables);
 
 	return (
-		<Html>
-			<Head />
-			<Preview>{previewText}</Preview>
+		<Tailwind config={TAILWIND_CONFIG}>
+			<Html>
+				<Head />
+				<Preview>{previewText}</Preview>
 
-			<Body style={main}>
-				<Container style={container}>
-					{/* Header with Logo */}
-					<Section style={header}>
-						<Row>
-							<Column>
-								{logoUrl ? (
-									<Img
-										src={logoUrl}
-										width="48"
-										height="48"
-										alt={`${appName} Logo`}
-										style={logo}
-									/>
-								) : (
-									<Text style={logoText}>{appName}</Text>
-								)}
-							</Column>
-						</Row>
-					</Section>
-
-					{/* Main Content */}
-					<Section style={content}>
-						{/* Welcome Message */}
-						<Text style={heading}>Verify your email address</Text>
-
-						<Text style={paragraph}>Hi {userName},</Text>
-
-						<Text style={paragraph}>
-							Thanks for signing up for {appName}! To complete your registration
-							and start using your account, please verify your email address by
-							clicking the button below.
-						</Text>
-
-						{/* Verification Button */}
-						<Section style={buttonContainer}>
-							<Button href={verificationUrl} style={button}>
-								Verify Email Address
-							</Button>
+				<Body className="bg-gray-50 font-sans">
+					<Container className="bg-white mx-auto py-5 mb-16 max-w-xl">
+						{/* Header with Logo */}
+						<Section className="px-6 py-8 text-center">
+							<Row>
+								<Column>
+									{logoUrl ? (
+										<Img
+											src={logoUrl}
+											width="48"
+											height="48"
+											alt={`${appName} Logo`}
+											className="mx-auto rounded-lg"
+										/>
+									) : (
+										<Text className="text-2xl font-bold text-gray-800 m-0 text-center">
+											{appName}
+										</Text>
+									)}
+								</Column>
+							</Row>
 						</Section>
 
-						{/* Alternative Link */}
-						<Text style={paragraph}>
-							If the button above doesn&apos;t work, you can also copy and paste
-							this link into your browser:
-						</Text>
-
-						<Text style={linkText}>
-							<Link href={verificationUrl} style={link}>
-								{verificationUrl}
-							</Link>
-						</Text>
-
-						{/* Security Notice */}
-						<Hr style={hr} />
-
-						<Text style={securityNotice}>
-							<strong>Security Notice:</strong> This verification link will
-							expire in {expirationHours} hours and can only be used once. If
-							you didn&apos;t create an account with {appName}, you can safely
-							ignore this email.
-						</Text>
-
-						{/* Account Info */}
-						<Section style={accountInfo}>
-							<Text style={accountInfoText}>
-								<strong>Account Details:</strong>
+						{/* Main Content */}
+						<Section className="px-6">
+							{/* Welcome Message */}
+							<Text className="text-3xl font-bold text-gray-800 text-center m-0 mb-8 leading-tight">
+								{translations.title}
 							</Text>
-							<Text style={accountInfoText}>Email: {userEmail}</Text>
-							<Text style={accountInfoText}>
-								Verification requested: {new Date().toLocaleString()}
+
+							<Text className="text-base leading-relaxed text-gray-600 m-0 mb-4">
+								{replaceVariables(translations.greeting, variables)}
+							</Text>
+
+							<Text className="text-base leading-relaxed text-gray-600 m-0 mb-4">
+								{replaceVariables(translations.description, variables)}
+							</Text>
+
+							{/* Verification Button */}
+							<Section className="text-center my-8">
+								<Button
+									href={verificationUrl}
+									className="bg-primary hover:bg-primary-600 text-white font-semibold py-4 px-8 rounded-lg shadow-lg inline-block no-underline transition-all duration-200"
+								>
+									{translations.verifyButton}
+								</Button>
+							</Section>
+
+							{/* Alternative Link */}
+							<Text className="text-base leading-relaxed text-gray-600 m-0 mb-4">
+								{translations.alternativeLink}
+							</Text>
+
+							<Text className="text-sm leading-relaxed text-gray-500 m-0 mb-6 break-all">
+								<Link href={verificationUrl} className="text-primary underline">
+									{verificationUrl}
+								</Link>
+							</Text>
+
+							{/* Security Notice */}
+							<Hr className="border-gray-200 my-6" />
+
+							<Text className="text-sm leading-relaxed text-amber-600 bg-amber-50 p-4 rounded-lg border border-amber-200 my-6">
+								<strong>
+									{replaceVariables(translations.linkExpiry, variables)}
+								</strong>
+							</Text>
+
+							<Text className="text-base leading-relaxed text-gray-600 m-0 mb-4">
+								{replaceVariables(translations.noAccount, variables)}
+							</Text>
+
+							{/* Account Info */}
+							<Section className="bg-gray-50 p-4 rounded-lg my-6">
+								<Text className="text-sm leading-normal text-gray-500 m-0 mb-2">
+									<strong>{translations.accountDetails}</strong>
+								</Text>
+								<Text className="text-sm leading-normal text-gray-500 m-0 mb-2">
+									Email: {userEmail}
+								</Text>
+								<Text className="text-sm leading-normal text-gray-500 m-0 mb-2">
+									{translations.verificationRequested}{" "}
+									{new Date().toLocaleString(locale)}
+								</Text>
+							</Section>
+						</Section>
+
+						{/* Footer */}
+						<Section className="px-6">
+							<Hr className="border-gray-200 my-6" />
+
+							<Text className="text-xs leading-normal text-gray-400 text-center m-0 mb-2">
+								{replaceVariables(translations.footer, variables)}
+							</Text>
+
+							<Text className="text-xs leading-normal text-gray-400 text-center m-0 mb-2">
+								{replaceVariables(translations.copyright, variables)}
 							</Text>
 						</Section>
-					</Section>
-
-					{/* Footer */}
-					<Section style={footer}>
-						<Hr style={hr} />
-
-						<Text style={footerText}>
-							This email was sent to {userEmail} because you created an account
-							on {appName}. If you have any questions, please contact our
-							support team.
-						</Text>
-
-						<Text style={footerText}>
-							© {new Date().getFullYear()} {appName}. All rights reserved.
-						</Text>
-					</Section>
-				</Container>
-			</Body>
-		</Html>
+					</Container>
+				</Body>
+			</Html>
+		</Tailwind>
 	);
 }
-
-// Styles - Mobile-first responsive design
-const main = {
-	backgroundColor: "#f6f9fc",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-	backgroundColor: "#ffffff",
-	margin: "0 auto",
-	padding: "20px 0 48px",
-	marginBottom: "64px",
-	maxWidth: "580px",
-};
-
-const header = {
-	padding: "32px 24px 24px",
-	textAlign: "center" as const,
-};
-
-const logo = {
-	margin: "0 auto",
-	borderRadius: "8px",
-};
-
-const logoText = {
-	fontSize: "24px",
-	fontWeight: "bold",
-	color: "#1f2937",
-	margin: "0",
-	textAlign: "center" as const,
-};
-
-const content = {
-	padding: "0 24px",
-};
-
-const heading = {
-	fontSize: "28px",
-	fontWeight: "bold",
-	color: "#1f2937",
-	textAlign: "center" as const,
-	margin: "0 0 32px",
-	lineHeight: "1.3",
-};
-
-const paragraph = {
-	fontSize: "16px",
-	lineHeight: "1.6",
-	color: "#374151",
-	margin: "0 0 16px",
-};
-
-const buttonContainer = {
-	textAlign: "center" as const,
-	margin: "32px 0",
-};
-
-const button = {
-	backgroundColor: "#3b82f6",
-	borderRadius: "8px",
-	color: "#ffffff",
-	fontSize: "16px",
-	fontWeight: "600",
-	textDecoration: "none",
-	textAlign: "center" as const,
-	display: "inline-block",
-	padding: "16px 32px",
-	boxShadow:
-		"0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-	transition: "all 0.2s ease-in-out",
-};
-
-const linkText = {
-	fontSize: "14px",
-	lineHeight: "1.6",
-	color: "#6b7280",
-	margin: "0 0 24px",
-	wordBreak: "break-all" as const,
-};
-
-const link = {
-	color: "#3b82f6",
-	textDecoration: "underline",
-};
-
-const hr = {
-	borderColor: "#e5e7eb",
-	margin: "24px 0",
-};
-
-const securityNotice = {
-	fontSize: "14px",
-	lineHeight: "1.6",
-	color: "#f59e0b",
-	backgroundColor: "#fef3c7",
-	padding: "16px",
-	borderRadius: "8px",
-	border: "1px solid #f3e8ff",
-	margin: "24px 0",
-};
-
-const accountInfo = {
-	backgroundColor: "#f9fafb",
-	padding: "16px",
-	borderRadius: "8px",
-	margin: "24px 0",
-};
-
-const accountInfoText = {
-	fontSize: "14px",
-	lineHeight: "1.5",
-	color: "#6b7280",
-	margin: "0 0 8px",
-};
-
-const footer = {
-	padding: "24px",
-};
-
-const footerText = {
-	fontSize: "12px",
-	lineHeight: "1.5",
-	color: "#9ca3af",
-	textAlign: "center" as const,
-	margin: "0 0 8px",
-};
 
 export default EmailVerification;

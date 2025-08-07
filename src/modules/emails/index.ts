@@ -25,6 +25,7 @@ export {
 export type {
 	SendInvitationEmailOptions,
 	SendPasswordResetEmailOptions,
+	SendSubscriptionNotificationOptions,
 	SendVerificationEmailOptions,
 	SendWelcomeEmailOptions,
 } from "./services";
@@ -32,12 +33,14 @@ export type {
 export {
 	sendInvitationEmail,
 	sendPasswordResetEmail,
+	sendSubscriptionNotificationEmail,
 	sendVerificationEmail,
 	sendWelcomeEmail,
 } from "./services";
 // Re-export templates for direct access if needed
 export { default as EmailVerificationTemplate } from "./templates/email-verification";
 export { default as InvitationEmailTemplate } from "./templates/invitation";
+export { default as SubscriptionNotificationTemplate } from "./templates/subscription-notification";
 export { default as WelcomeEmailTemplate } from "./templates/welcome";
 // Export utilities
 export {
