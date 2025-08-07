@@ -1,7 +1,7 @@
 import { render } from "@react-email/render";
 import { env } from "@/lib/env";
 import { getEmailProvider } from "../providers";
-import SubscriptionNotificationEmail from "../templates/subscription-notification";
+import SubscriptionUpgradeEmail from "../templates/subscription-upgrade";
 
 /**
  * Subscription Notification Email Service
@@ -83,7 +83,7 @@ export async function sendSubscriptionNotificationEmail({
 
 		// Render the email template to HTML
 		const emailHtml = await render(
-			SubscriptionNotificationEmail({
+			SubscriptionUpgradeEmail({
 				userEmail: to,
 				userName,
 				dashboardUrl,

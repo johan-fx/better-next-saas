@@ -26,6 +26,7 @@
     "test:install": "playwright install"
   },
   "dependencies": {
+    "@better-auth/stripe": "^1.3.4",
     "@daveyplate/better-auth-ui": "^2.0.12",
     "@formatjs/intl-localematcher": "^0.6.1",
     "@hookform/resolvers": "^5.1.1",
@@ -34,6 +35,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@react-email/components": "^0.1.1",
     "@react-email/render": "^1.1.3",
+    "@react-email/tailwind": "^1.2.2",
     "@tanstack/react-query": "^5.81.5",
     "@trpc/client": "^11.4.3",
     "@trpc/server": "^11.4.3",
@@ -67,6 +69,7 @@
     "server-only": "^0.0.1",
     "slugify": "^1.6.6",
     "sonner": "^2.0.6",
+    "stripe": "^18.0.0",
     "tailwind-merge": "^3.3.1",
     "typedash": "^3.2.5",
     "vaul": "^1.1.2",

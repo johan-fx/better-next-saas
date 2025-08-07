@@ -21,7 +21,7 @@ import esMessages from "@/messages/es.json";
 import { TAILWIND_CONFIG } from "../config";
 import { createEmailVariables, replaceVariables } from "../utils/variables";
 
-interface SubscriptionNotificationEmailProps {
+interface SubscriptionUpgradeEmailProps {
 	/**
 	 * User's name
 	 */
@@ -83,7 +83,7 @@ const availableTranslations = {
  * This approach allows the email to work with react-email dev server
  * since all translations are passed as props from the server-side code
  */
-export default function SubscriptionNotificationEmail({
+export default function SubscriptionUpgradeEmail({
 	userName,
 	userEmail,
 	dashboardUrl,
@@ -95,7 +95,7 @@ export default function SubscriptionNotificationEmail({
 	appName = "My App",
 	logoUrl,
 	translations: overrideTranslations,
-}: SubscriptionNotificationEmailProps) {
+}: SubscriptionUpgradeEmailProps) {
 	const currentYear = new Date().getFullYear();
 	const translations =
 		overrideTranslations ||

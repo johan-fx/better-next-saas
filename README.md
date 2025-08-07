@@ -289,7 +289,7 @@ npm run db:drop
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Better Auth Documentation](https://better-auth.com)
-- [oRPC Documentation](https://orpc.unnoq.com)
+- [tRPC Documentation](https://trpc.io/docs)
 - [Drizzle ORM Documentation](https://orm.drizzle.team)
 - [shadcn/ui Documentation](https://ui.shadcn.com)
 
