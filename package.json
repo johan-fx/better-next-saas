@@ -23,7 +23,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:install": "playwright install"
+    "test:install": "playwright install",
+    "translate": "npx -y languine@latest translate"
   },
   "dependencies": {
     "@better-auth/stripe": "^1.3.4",
