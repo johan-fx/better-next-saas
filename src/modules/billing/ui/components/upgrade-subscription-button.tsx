@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import type { Plan } from "../../plans";
@@ -18,6 +19,7 @@ export const UpgradeSubscriptionButton = ({
 	disabled,
 	loading,
 }: Props) => {
+	const t = useTranslations("billing");
 	const { data: organization, isPending } = authClient.useActiveOrganization();
 
 	const handleSubscribe = async () => {
@@ -43,11 +45,12 @@ export const UpgradeSubscriptionButton = ({
 			onClick={handleSubscribe}
 			className="w-full"
 			disabled={isPending || disabled || loading || !organization?.id}
+			variant={disabled ? "outline" : "default"}
 		>
 			{isPending || loading ? (
 				<Loader2 className="mr-2 size-4 animate-spin" />
 			) : (
-				buttonText
+				buttonText || t("buttons.upgrade")
 			)}
 		</Button>
 	);

@@ -136,6 +136,7 @@
       "subscriptionDetails": "Subscription Details",
       "plan": "Plan",
       "price": "Price",
+      "perMonth": "/month",
       "nextBilling": "Next billing date",
       "accessDashboard": "Access Dashboard",
       "whatsNext": "What's next?",
@@ -677,5 +678,63 @@
     "ACCOUNTS_INSTRUCTIONS": "Sign in to an additional account.",
     "ACCOUNTS_DESCRIPTION": "Manage your currently signed in accounts.",
     "ACCOUNTS": "Accounts"
+  },
+  "billing": {
+    "title": "Billing",
+    "perMonth": "/mes",
+    "plans": {
+      "free": {
+        "name": "Free plan",
+        "features": {
+          "1": "2 GB of cloud storage",
+          "2": "Locally stored files",
+          "3": "1 individual user",
+          "4": "1 devices synced"
+        },
+        "cta": "Downgrade"
+      },
+      "basic": {
+        "name": "Basic plan",
+        "features": {
+          "1": "10 GB of cloud storage",
+          "2": "Locally stored files",
+          "3": "Up to 5 individual users",
+          "4": "Up to 3 devices synced"
+        }
+      },
+      "plus": {
+        "name": "Plus plan",
+        "features": {
+          "1": "20 GB of cloud storage",
+          "2": "Locally stored files",
+          "3": "Up to 10 individual users",
+          "4": "Up to 10 devices synced"
+        }
+      },
+      "pro": {
+        "name": "Pro plan",
+        "features": {
+          "1": "50 GB of cloud storage",
+          "2": "Locally and cloud stored files",
+          "3": "Up to 15 individual users",
+          "4": "Up to 30 devices synced"
+        },
+        "trialCta": "Try for free for 30 days"
+      }
+    },
+    "buttons": {
+      "current": "Current plan",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade"
+    },
+    "history": {
+      "title": "Billing history",
+      "invoice": "Invoice",
+      "date": "Date",
+      "plan": "Plan",
+      "amount": "Amount",
+      "download": "Download PDF",
+      "open": "Open"
+    }
   }
 }

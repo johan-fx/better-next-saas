@@ -137,6 +137,7 @@
       "subscriptionDetails": "Detalles de la Suscripción",
       "plan": "Plan",
       "price": "Precio",
+      "perMonth": "/mes",
       "nextBilling": "Próxima fecha de facturación",
       "accessDashboard": "Acceder al Panel",
       "whatsNext": "¿Qué sigue?",
@@ -678,5 +679,63 @@
     "ACCOUNTS_INSTRUCTIONS": "Inicia sesión en una cuenta adicional.",
     "ACCOUNTS_DESCRIPTION": "Gestiona tus cuentas con sesión iniciada actualmente.",
     "ACCOUNTS": "Cuentas"
+  },
+  "billing": {
+    "title": "Facturación",
+    "perMonth": "/mes",
+    "plans": {
+      "free": {
+        "name": "Plan gratis",
+        "features": {
+          "1": "2 GB de almacenamiento en la nube",
+          "2": "Archivos almacenados localmente",
+          "3": "1 usuario individual",
+          "4": "1 dispositivo sincronizado"
+        },
+        "cta": "Degradar"
+      },
+      "basic": {
+        "name": "Plan básico",
+        "features": {
+          "1": "10 GB de almacenamiento en la nube",
+          "2": "Archivos almacenados localmente",
+          "3": "Hasta 5 usuarios individuales",
+          "4": "Hasta 3 dispositivos sincronizados"
+        }
+      },
+      "plus": {
+        "name": "Plan plus",
+        "features": {
+          "1": "20 GB de almacenamiento en la nube",
+          "2": "Archivos almacenados localmente",
+          "3": "Hasta 10 usuarios individuales",
+          "4": "Hasta 10 dispositivos sincronizados"
+        }
+      },
+      "pro": {
+        "name": "Plan pro",
+        "features": {
+          "1": "50 GB de almacenamiento en la nube",
+          "2": "Archivos locales y en la nube",
+          "3": "Hasta 15 usuarios individuales",
+          "4": "Hasta 30 dispositivos sincronizados"
+        },
+        "trialCta": "Prueba gratis por 30 días"
+      }
+    },
+    "buttons": {
+      "current": "Plan actual",
+      "upgrade": "Mejorar",
+      "downgrade": "Degradar"
+    },
+    "history": {
+      "title": "Historial de facturación",
+      "invoice": "Factura",
+      "date": "Fecha",
+      "plan": "Plan",
+      "amount": "Importe",
+      "download": "Descargar PDF",
+      "open": "Abrir"
+    }
   }
 }

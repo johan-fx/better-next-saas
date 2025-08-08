@@ -6,6 +6,11 @@ export type Plan = {
 		seats: number;
 		monthlyCredits: number;
 	};
+	price?: {
+		unitAmount: number;
+		currency: string;
+		interval: string;
+	};
 };
 
 export const plans: Plan[] = [

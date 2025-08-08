@@ -25,6 +25,7 @@ export default async function BillingPage({ params }: Props) {
 		trpc.billing.getActiveSubscription.queryOptions(),
 	);
 	void queryClient.prefetchQuery(trpc.billing.getPlans.queryOptions());
+	void queryClient.prefetchQuery(trpc.billing.getInvoices.queryOptions());
 
 	return (
 		<div className="container flex grow flex-col p-4 md:p-6">
