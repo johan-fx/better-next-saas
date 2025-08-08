@@ -3,7 +3,6 @@ import type { User } from "better-auth";
 import { and, eq } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db } from "@/lib/db";
-// import { sendSubscriptionNotificationEmail } from "@/modules/emails";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { sendSubscriptionUpgradeEmail } from "@/modules/emails";

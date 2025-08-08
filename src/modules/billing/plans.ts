@@ -1,6 +1,16 @@
-export const plans = [
+export type Plan = {
+	id: number;
+	name: string;
+	priceId: string;
+	limits: {
+		seats: number;
+		monthlyCredits: number;
+	};
+};
+
+export const plans: Plan[] = [
 	{
-		id: "basic",
+		id: 1,
 		name: "Basic",
 		priceId: "price_1RtByU5ZK2K6r0Nz39QwKDXG",
 		limits: {
@@ -9,7 +19,7 @@ export const plans = [
 		},
 	},
 	{
-		id: "plus",
+		id: 2,
 		name: "Plus",
 		priceId: "price_1RtBzz5ZK2K6r0NzwEf9QG3c",
 		limits: {
@@ -18,7 +28,7 @@ export const plans = [
 		},
 	},
 	{
-		id: "pro",
+		id: 3,
 		name: "Pro",
 		priceId: "price_1RtC0x5ZK2K6r0NzghmOE1fz",
 		limits: {

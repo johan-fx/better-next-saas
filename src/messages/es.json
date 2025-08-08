@@ -33,7 +33,8 @@
     "security": "Seguridad",
     "organization": "Organización",
     "members": "Miembros",
-    "general": "General"
+    "general": "General",
+    "billing": "Facturación"
   },
   "homePage": {
     "title": "Bienvenido a este boilerplate",

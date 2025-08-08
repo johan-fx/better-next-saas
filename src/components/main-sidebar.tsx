@@ -1,6 +1,14 @@
 "use client";
 
-import { Building, Home, LogOut, Shield, User, Users } from "lucide-react";
+import {
+	Building,
+	CreditCard,
+	Home,
+	LogOut,
+	Shield,
+	User,
+	Users,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -86,6 +94,11 @@ const MainSidebar = () => {
 			title: t("security"),
 			url: "/account/security",
 			icon: Shield,
+		},
+		{
+			title: t("billing"),
+			url: "/account/billing",
+			icon: CreditCard,
 		},
 	];
 
