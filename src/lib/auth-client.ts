@@ -8,7 +8,8 @@ import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
 
 // Client-safe flag derived from public env var
-const isStripeEnabled = process?.env?.NEXT_PUBLIC_STRIPE_ENABLED === "true";
+const isStripeEnabled =
+	!!process && process.env.NEXT_PUBLIC_STRIPE_ENABLED === "true";
 
 export const authClient = createAuthClient({
 	plugins: [

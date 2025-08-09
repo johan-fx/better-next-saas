@@ -3,6 +3,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Radio } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -13,10 +14,9 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-// Tabs were used previously for per-card switching; now the period will be controlled from parent
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
-import { BillingPeriod, type Plan } from "../../plans";
+import { BillingPeriod, type Plan, plans } from "../../plans";
 import { UpgradeSubscriptionButton } from "../components/upgrade-subscription-button";
 
 function formatAmountCents(amount: number, currency: string) {
@@ -38,6 +38,7 @@ export const PlansCards = ({
 }) => {
 	const trpc = useTRPC();
 	const t = useTranslations("billing");
+	const [upgradingPlan, setUpgradingPlan] = useState<Plan | null>(null);
 
 	const { data: plans } = useSuspenseQuery(
 		trpc.billing.getPlans.queryOptions(),
@@ -47,6 +48,11 @@ export const PlansCards = ({
 		trpc.billing.getActiveSubscription.queryOptions(),
 	);
 
+	const currentPlan = plans.find(
+		(plan) =>
+			plan.name.toLowerCase() === activeSubscription?.plan?.toLowerCase(),
+	);
+
 	const isCurrentPlan = (plan: Plan) => {
 		return activeSubscription?.plan?.toLowerCase() === plan.name.toLowerCase();
 	};
@@ -54,10 +60,14 @@ export const PlansCards = ({
 	const getButtonText = (plan: Plan) => {
 		if (isCurrentPlan(plan)) {
 			return t("buttons.manage");
-		} else if (Number(activeSubscription?.id ?? 0) > Number(plan?.id ?? 0)) {
+		} else if ((currentPlan?.id ?? 0) > plan.id) {
 			return t("buttons.downgrade");
 		}
 		return t("buttons.upgrade");
+	};
+
+	const handleUpgrade = (plan: Plan | null) => {
+		setUpgradingPlan(plan);
 	};
 
 	const planKeyMap: Record<string, string> = {
@@ -115,6 +125,9 @@ export const PlansCards = ({
 								plan={plan}
 								period={period}
 								buttonText={getButtonText(plan)}
+								onUpgrade={handleUpgrade}
+								disabled={!!upgradingPlan}
+								loading={upgradingPlan?.id === plan.id}
 							/>
 						</CardFooter>
 					</Card>

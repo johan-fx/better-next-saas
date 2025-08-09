@@ -14,6 +14,7 @@ interface Props {
 	disabled?: boolean;
 	loading?: boolean;
 	period: BillingPeriod;
+	onUpgrade: (plan: Plan | null) => void;
 }
 
 export const UpgradeSubscriptionButton = ({
@@ -22,6 +23,7 @@ export const UpgradeSubscriptionButton = ({
 	disabled,
 	loading,
 	period,
+	onUpgrade,
 }: Props) => {
 	const t = useTranslations("billing");
 	const trpc = useTRPC();
@@ -34,6 +36,7 @@ export const UpgradeSubscriptionButton = ({
 		activeSubscription?.plan?.toLowerCase() === plan.name.toLowerCase();
 
 	const handleSubscribe = async () => {
+		onUpgrade?.(plan);
 		try {
 			if (isCurrentPlan) {
 				const { data, error } = await authClient.subscription.billingPortal({
@@ -41,6 +44,7 @@ export const UpgradeSubscriptionButton = ({
 					returnUrl: "/account/billing",
 				});
 				if (error) {
+					onUpgrade?.(null);
 					console.log(error);
 				}
 				if (data?.url) {
@@ -60,12 +64,14 @@ export const UpgradeSubscriptionButton = ({
 				annual: period === BillingPeriod.YEARLY,
 			});
 			if (error) {
+				onUpgrade?.(null);
 				console.log(error);
 			}
 			if (data?.url) {
 				window.location.href = data.url as string;
 			}
 		} catch (err) {
+			onUpgrade?.(null);
 			console.log(err);
 		}
 	};
