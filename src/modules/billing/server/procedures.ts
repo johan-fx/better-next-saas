@@ -1,9 +1,9 @@
 import type { Subscription } from "@better-auth/stripe";
 import { TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { auth } from "@/lib/auth";
-import { env } from "@/lib/env";
+import { isStripeEnabled, stripeClient } from "@/lib/stripe";
 import {
 	baseProcedure,
 	createTRPCRouter,
@@ -15,11 +15,9 @@ export const billingRouter = createTRPCRouter({
 	// Return configured plans enriched with Stripe price information when available
 	getPlans: baseProcedure.query(async () => {
 		// If Stripe is not configured, just return the static plans
-		if (!env.STRIPE_SECRET_KEY) {
+		if (!isStripeEnabled || !stripeClient) {
 			return plans;
 		}
-
-		const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 		const result = await Promise.all(
 			plans.map(async (plan) => {
@@ -30,10 +28,10 @@ export const billingRouter = createTRPCRouter({
 
 					const [monthly, yearly] = await Promise.all([
 						monthlyPriceId
-							? stripe.prices.retrieve(monthlyPriceId)
+							? stripeClient?.prices.retrieve(monthlyPriceId)
 							: Promise.resolve(undefined as unknown as Stripe.Price),
 						yearlyPriceId
-							? stripe.prices.retrieve(yearlyPriceId)
+							? stripeClient?.prices.retrieve(yearlyPriceId)
 							: Promise.resolve(undefined as unknown as Stripe.Price),
 					]);
 
@@ -83,13 +81,16 @@ export const billingRouter = createTRPCRouter({
 
 			const customerId = activeAppSubscription?.stripeCustomerId;
 
-			if (!env.STRIPE_SECRET_KEY || !customerId) {
+			if (!isStripeEnabled || !customerId) {
 				return activeAppSubscription ?? null;
 			}
 
 			// Fetch the real active subscription from Stripe
-			const stripe = new Stripe(env.STRIPE_SECRET_KEY);
-			const stripeSubscriptions = await stripe.subscriptions.list({
+			const sc = stripeClient;
+			if (!sc) {
+				return activeAppSubscription ?? null;
+			}
+			const stripeSubscriptions = await sc.subscriptions.list({
 				customer: customerId,
 				status: "active",
 				expand: ["data.items.data.price", "data.items.data.plan"],
@@ -122,7 +123,7 @@ export const billingRouter = createTRPCRouter({
 	// List invoices for the current organization's Stripe customer
 	getInvoices: protectedProcedure.query(async ({ ctx }) => {
 		try {
-			if (!env.STRIPE_SECRET_KEY) {
+			if (!isStripeEnabled) {
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Stripe not configured",
@@ -148,9 +149,11 @@ export const billingRouter = createTRPCRouter({
 				return [];
 			}
 
-			const stripe = new Stripe(env.STRIPE_SECRET_KEY);
-
-			const invoices = await stripe.invoices.list({
+			const sc = stripeClient;
+			if (!sc) {
+				return [];
+			}
+			const invoices = await sc.invoices.list({
 				customer: stripeCustomerId,
 				limit: 50,
 				expand: ["data.payment_intent", "data.charge"],

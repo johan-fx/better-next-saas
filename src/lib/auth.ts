@@ -3,7 +3,6 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
 import slugify from "slugify";
-import Stripe from "stripe";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
 import { getDefaultOrganization } from "@/modules/auth/server/utils";
 import { plans } from "@/modules/billing/plans";
@@ -21,12 +20,9 @@ import { getPreferredLanguage } from "@/modules/i18n/utils";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { env } from "./env";
+import { isStripeEnabled, stripeClient } from "./stripe";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY ?? "";
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? "";
-
-const stripeClient = new Stripe(stripeSecretKey);
-const isStripeEnabled = !!stripeSecretKey && !!stripeWebhookSecret;
 
 /**
  * Better Auth Configuration
@@ -155,7 +151,7 @@ export const auth = betterAuth({
 		}),
 
 		// Stripe plugin for payment integration (only if API key is provided)
-		...(isStripeEnabled
+		...(isStripeEnabled && stripeClient
 			? [
 					stripe({
 						stripeClient,

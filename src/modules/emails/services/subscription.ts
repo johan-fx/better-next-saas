@@ -54,6 +54,7 @@ export async function sendSubscriptionUpgradeEmail({
 			subscriptionDetails: t("subscriptionDetails"),
 			plan: t("plan"),
 			price: t("price"),
+			perMonth: t("perMonth"),
 			nextBilling: t("nextBilling"),
 			accessDashboard: t("accessDashboard"),
 			whatsNext: t("whatsNext"),
