@@ -293,6 +293,172 @@ npm run db:drop
 - [Drizzle ORM Documentation](https://orm.drizzle.team)
 - [shadcn/ui Documentation](https://ui.shadcn.com)
 
+## 💳 Billing & Payments (Better Auth + Stripe)
+
+This project ships with a production-ready Stripe integration powered by the Better Auth Stripe plugin. It supports customer creation, subscriptions, invoices, and organization-based billing out of the box.
+
+### What’s included
+
+- Subscription plans defined in `src/modules/billing/plans.ts`
+- Server-side plugin setup in `src/lib/auth.ts` (auto-enabled when Stripe env vars are present)
+- Client plugin setup in `src/lib/auth-client.ts`
+- Secure webhook handling via the Better Auth API route: `/api/auth/stripe/webhook`
+- tRPC helpers for plans, active subscription, and invoices: `src/modules/billing/server/procedures.ts`
+- UI components and view for plan selection and upgrades:
+  - `src/modules/billing/ui/components/plans-cards.tsx`
+  - `src/modules/billing/ui/components/upgrade-subscription-button.tsx`
+  - `src/app/[locale]/(private)/account/billing/page.tsx`
+- Email on successful subscription upgrade: `src/modules/emails/services/subscription.ts`
+
+### 1) Install dependencies (if not already installed)
+
+```bash
+pnpm add @better-auth/stripe stripe
+# or: npm i @better-auth/stripe stripe
+```
+
+The repo already pins compatible versions in `package.json`.
+
+### 2) Configure environment variables
+
+Copy `.env.example` to `.env.local` and set the Stripe keys:
+
+```env
+# Stripe payment processing
+STRIPE_SECRET_KEY="sk_live_... or sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+```
+
+Notes:
+
+- The plugin is enabled only when both `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set (see `src/lib/auth.ts`).
+- Public app URL should be set for correct redirects: `NEXT_PUBLIC_APP_URL`.
+
+### 3) Define your plans and Stripe Price IDs
+
+Update price IDs in:
+
+```bash
+src/modules/billing/plans.ts
+```
+
+Each plan references a Stripe Price ID. Replace the sample `price_...` values with your own from the Stripe Dashboard.
+
+### 4) Server plugin configuration (already wired)
+
+The Better Auth Stripe plugin is configured in `src/lib/auth.ts` and auto-initializes when env vars are present:
+
+```ts
+import { stripe } from "@better-auth/stripe";
+import Stripe from "stripe";
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+
+export const auth = betterAuth({
+  // ...
+  plugins: [
+    // ... other plugins
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans,
+        authorizeReference: authorizeSubscription,
+        onSubscriptionComplete,
+      },
+    }),
+  ],
+});
+```
+
+Authorization logic ensures only organization owners can manage billing (see `authorizeSubscription` in `src/modules/billing/server/subscriptions.ts`). On successful subscription creation, a localized email is sent (`onSubscriptionComplete`).
+
+### 5) Client plugin configuration (already wired)
+
+The client enables subscription methods when Stripe is configured:
+
+```bash
+src/lib/auth-client.ts
+```
+
+It conditionally loads `stripeClient({ subscription: true })` so you can call:
+
+```ts
+await authClient.subscription.upgrade({
+  plan: "Pro",
+  referenceId: organization?.id, // bills the active organization
+  successUrl: "/account/billing",
+  cancelUrl: "/account/billing",
+});
+```
+
+The `UpgradeSubscriptionButton` component demonstrates this integration and is used by the billing view.
+
+### 6) Webhook setup
+
+Create a Stripe webhook endpoint pointing to:
+
+```bash
+https://YOUR_DOMAIN/api/auth/stripe/webhook
+```
+
+Recommended events:
+
+- `checkout.session.completed`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+
+Add the signing secret value to `STRIPE_WEBHOOK_SECRET` in your environment.
+
+Local development with Stripe CLI:
+
+```bash
+stripe listen --forward-to localhost:3000/api/auth/stripe/webhook
+# Use the printed signing secret as STRIPE_WEBHOOK_SECRET
+```
+
+### 7) Invoices and pricing display
+
+- `billing.getPlans` enriches your configured plans with live Stripe price data (currency, interval, amount) when Stripe is enabled.
+- `billing.getActiveSubscription` returns the current org’s subscription.
+- `billing.getInvoices` lists invoices for the active org’s Stripe customer.
+
+These are consumed by the billing UI to render pricing and invoice history.
+
+### 8) Multi-tenant (organizations) support
+
+- Subscriptions are associated to a `referenceId`, which in this boilerplate is the active organization ID.
+- Only owners can upgrade/cancel/restore subscriptions by default. Adjust `authorizeSubscription` if your roles differ.
+
+### 9) Testing the flow
+
+1. Sign up and create an organization.
+2. Go to Account → Billing: `/account/billing`.
+3. Click Upgrade on a plan. Complete Stripe Checkout.
+4. After the webhook processes, you’ll see the subscription listed and receive a confirmation email.
+
+If webhooks don’t seem to process:
+
+- Confirm the webhook URL and secret
+- Check server logs
+- Ensure the selected events include `checkout.session.completed`
+
+### 10) Troubleshooting
+
+- Plugin not enabled: Ensure both `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set.
+- Prices show as $0.00: Replace example `priceId` values in `src/modules/billing/plans.ts` with real Stripe Price IDs.
+- No invoices: The org might not have a Stripe customer or an active subscription yet.
+- Permissions: The default policy allows only organization owners to manage billing.
+
+For advanced options (e.g., customizing Checkout session params, tax collection), see the Better Auth Stripe plugin docs.
+
+Links:
+
+- [Better Auth Stripe plugin](https://better-auth.com/docs/plugins/stripe)
+- [Stripe Dashboard](https://dashboard.stripe.com)
+
 ## 🚀 Deployment
 
 This boilerplate is optimized for deployment on:
