@@ -744,7 +744,7 @@
       "open": "Abrir",
       "empty": {
         "title": "Aún no hay facturas",
-        "description": "Tus facturas aparecerán aquí cuando tengas actividad de facturación."
+        "description": "Tus facturas aparecerán aquí una vez que tengas actividad de facturación."
       }
     }
   }
