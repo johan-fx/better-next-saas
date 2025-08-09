@@ -7,10 +7,8 @@ import {
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY ?? "";
-const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? "";
-
-const isStripeEnabled = !!stripeSecretKey && !!stripeWebhookSecret;
+// Client-safe flag derived from public env var
+const isStripeEnabled = process?.env?.NEXT_PUBLIC_STRIPE_ENABLED === "true";
 
 export const authClient = createAuthClient({
 	plugins: [

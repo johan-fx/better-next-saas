@@ -346,32 +346,7 @@ Each plan references a Stripe Price ID. Replace the sample `price_...` values wi
 
 ### 4) Server plugin configuration (already wired)
 
-The Better Auth Stripe plugin is configured in `src/lib/auth.ts` and auto-initializes when env vars are present:
-
-```ts
-import { stripe } from "@better-auth/stripe";
-import Stripe from "stripe";
-
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
-
-export const auth = betterAuth({
-  // ...
-  plugins: [
-    // ... other plugins
-    stripe({
-      stripeClient,
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
-      createCustomerOnSignUp: true,
-      subscription: {
-        enabled: true,
-        plans,
-        authorizeReference: authorizeSubscription,
-        onSubscriptionComplete,
-      },
-    }),
-  ],
-});
-```
+The Better Auth Stripe plugin is configured in `src/lib/auth.ts` and auto-initializes when env vars are present.
 
 Authorization logic ensures only organization owners can manage billing (see `authorizeSubscription` in `src/modules/billing/server/subscriptions.ts`). On successful subscription creation, a localized email is sent (`onSubscriptionComplete`).
 
