@@ -33,7 +33,8 @@
     "security": "Seguridad",
     "organization": "Organización",
     "members": "Miembros",
-    "general": "General"
+    "general": "General",
+    "billing": "Facturación"
   },
   "homePage": {
     "title": "Bienvenido a este boilerplate",
@@ -62,7 +63,7 @@
     "welcome": {
       "subject": "¡Bienvenido a {appName}!",
       "greeting": "Hola {userName},",
-      "title": "🎉 ¡Bienvenido a {appName}!",
+      "title": "¡Bienvenido a {appName}!",
       "congratulations": "¡Felicitaciones! Tu correo electrónico ha sido verificado y tu cuenta de {appName} ya está activa. Estamos emocionados de tenerte a bordo y esperamos ver lo que construirás con nuestra plataforma.",
       "getStarted": "Comenzar",
       "nextSteps": "Esto es lo que puedes hacer a continuación:",
@@ -89,29 +90,31 @@
       "subject": "Verifica tu dirección de correo electrónico",
       "greeting": "Hola,",
       "title": "Verifica tu dirección de correo electrónico",
-      "description": "¡Gracias por registrarte en {appName}! Para completar la configuración de tu cuenta y asegurar que recibas actualizaciones importantes, por favor verifica tu dirección de correo electrónico haciendo clic en el botón de abajo.",
-      "verifyButton": "Verificar Dirección de Correo Electrónico",
+      "description": "Para completar la configuración de tu cuenta y asegurar que recibas actualizaciones importantes, por favor verifica tu dirección de correo electrónico haciendo clic en el botón de abajo.",
+      "verifyButton": "Verificar Correo Electrónico",
       "alternativeLink": "Si el botón de arriba no funciona, también puedes copiar y pegar este enlace en tu navegador:",
-      "linkExpiry": "Este enlace de verificación expirará en 24 horas por razones de seguridad.",
+      "linkExpiry": "Este enlace de verificación expirará en {expirationHours} horas por razones de seguridad.",
       "noAccount": "Si no creaste una cuenta con {appName}, puedes ignorar este correo de forma segura.",
+      "accountDetails": "Detalles de la Cuenta:",
+      "verificationRequested": "Verificación solicitada:",
       "footer": "Estás recibiendo este correo porque alguien se registró en {appName} usando esta dirección de correo electrónico.",
       "copyright": "© {year} {appName}. Todos los derechos reservados."
     },
     "invitation": {
-      "subject": "Has sido invitado a unirte a {appName}",
+      "subject": "Has sido invitado a unirte a {organizationName} en {appName}",
       "greeting": "Hola,",
-      "title": "¡Has sido invitado!",
-      "invitedBy": "{inviterName} te ha invitado a unirte a {appName}.",
+      "title": "¡Has sido invitado a unirte a {organizationName}!",
+      "invitedBy": "{inviterName} ({inviterEmail}) te ha invitado a unirte a {organizationName} como {role} en {appName}.",
       "description": "Únete a miles de usuarios que ya están usando {appName} para optimizar su flujo de trabajo y aumentar la productividad.",
       "acceptInvitation": "Aceptar Invitación",
-      "alternativeLink": "Si el botón de arriba no funciona, también puedes copiar y pegar este enlace en tu navegador:",
+      "alternativeLink": "Si el botón de arriba no funciona, copia y pega este enlace en tu navegador:",
       "linkExpiry": "Este enlace de invitación expirará en 7 días.",
       "features": "Lo que te espera:",
       "feature1": "✨ Herramientas intuitivas de gestión de proyectos",
       "feature2": "👥 Colaboración en equipo sin problemas",
       "feature3": "📊 Análisis e informes poderosos",
       "feature4": "🔒 Seguridad de nivel empresarial",
-      "footer": "Estás recibiendo este correo porque {inviterName} te invitó a unirte a {appName}.",
+      "footer": "Si no esperabas esta invitación, puedes ignorar este correo de forma segura.",
       "copyright": "© {year} {appName}. Todos los derechos reservados."
     },
     "passwordReset": {
@@ -119,7 +122,44 @@
       "greeting": "Hola,",
       "title": "Restablece tu contraseña",
       "description": "Recibimos una solicitud para restablecer tu contraseña. Para continuar, por favor haz clic en el botón de abajo.",
-      "resetButton": "Restablecer Contraseña"
+      "resetButton": "Restablecer Contraseña",
+      "alternativeLink": "Si el botón de arriba no funciona, también puedes copiar y pegar este enlace en tu navegador:",
+      "linkExpiry": "Este enlace de restablecimiento de contraseña expirará en 24 horas por razones de seguridad.",
+      "noRequest": "Si no solicitaste un restablecimiento de contraseña, puedes ignorar este correo de forma segura.",
+      "footer": "Estás recibiendo este correo porque alguien solicitó un restablecimiento de contraseña para tu cuenta de {appName}.",
+      "copyright": "© {year} {appName}. Todos los derechos reservados."
+    },
+    "subscription": {
+      "subject": "¡Tu suscripción a {appName} ya está activa!",
+      "greeting": "Hola {userName},",
+      "title": "¡Tu Suscripción está Activa!",
+      "confirmation": "¡Excelentes noticias! Tu suscripción a {planName} ha sido activada exitosamente. Ahora tienes acceso a todas las funciones premium y puedes aprovechar al máximo tu experiencia con {appName}.",
+      "subscriptionDetails": "Detalles de la Suscripción",
+      "plan": "Plan",
+      "price": "Precio",
+      "perMonth": "/mes",
+      "nextBilling": "Próxima fecha de facturación",
+      "accessDashboard": "Acceder al Panel",
+      "whatsNext": "¿Qué sigue?",
+      "step1": "Explora las funciones premium - Desbloquea todo el potencial de tu cuenta",
+      "step2": "Configura integraciones - Conéctate con tus herramientas y servicios favoritos",
+      "step3": "Personaliza tu espacio de trabajo - Adapta la experiencia a tus necesidades",
+      "step4": "Gestiona tu suscripción - Ve los detalles de facturación y actualiza preferencias",
+      "premiumFeatures": "Tus Funciones Premium Incluyen:",
+      "feature1Title": "🚀 Análisis Avanzados",
+      "feature1Description": "Obtén información detallada e informes para seguir tu progreso",
+      "feature2Title": "⚡ Soporte Prioritario",
+      "feature2Description": "Recibe tiempos de respuesta más rápidos y asistencia dedicada",
+      "feature3Title": "🔧 Integraciones Avanzadas",
+      "feature3Description": "Conéctate con herramientas empresariales y flujos de trabajo personalizados",
+      "feature4Title": "👥 Colaboración en Equipo",
+      "feature4Description": "Funciones de equipo mejoradas y colaboradores ilimitados",
+      "billingInfo": "Tu suscripción se renovará automáticamente en tu próxima fecha de facturación. Puedes gestionar tu suscripción, actualizar métodos de pago o cancelar en cualquier momento desde el panel de tu cuenta.",
+      "accountDetails": "Información de la Suscripción:",
+      "email": "Correo electrónico",
+      "subscriptionDate": "Suscripción iniciada:",
+      "footer": "Estás recibiendo este correo porque te suscribiste exitosamente a un plan en {appName}. Si tienes alguna pregunta sobre tu suscripción, no dudes en contactar a nuestro equipo de soporte.",
+      "copyright": "© {year} {appName}. Todos los derechos reservados."
     }
   },
   "errors": {
@@ -639,5 +679,73 @@
     "ACCOUNTS_INSTRUCTIONS": "Inicia sesión en una cuenta adicional.",
     "ACCOUNTS_DESCRIPTION": "Gestiona tus cuentas con sesión iniciada actualmente.",
     "ACCOUNTS": "Cuentas"
+  },
+  "billing": {
+    "title": "Facturación",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "monthlyPeriod": "/mes",
+    "yearlyPeriod": "/año",
+    "plans": {
+      "free": {
+        "name": "Plan gratis",
+        "features": {
+          "1": "2 GB de almacenamiento en la nube",
+          "2": "Archivos almacenados localmente",
+          "3": "1 usuario individual",
+          "4": "1 dispositivo sincronizado"
+        },
+        "cta": "Degradar"
+      },
+      "basic": {
+        "name": "Plan básico",
+        "features": {
+          "1": "10 GB de almacenamiento en la nube",
+          "2": "Archivos almacenados localmente",
+          "3": "Hasta 5 usuarios individuales",
+          "4": "Hasta 3 dispositivos sincronizados"
+        }
+      },
+      "plus": {
+        "name": "Plan plus",
+        "features": {
+          "1": "20 GB de almacenamiento en la nube",
+          "2": "Archivos almacenados localmente",
+          "3": "Hasta 10 usuarios individuales",
+          "4": "Hasta 10 dispositivos sincronizados"
+        }
+      },
+      "pro": {
+        "name": "Plan pro",
+        "features": {
+          "1": "50 GB de almacenamiento en la nube",
+          "2": "Archivos locales y en la nube",
+          "3": "Hasta 15 usuarios individuales",
+          "4": "Hasta 30 dispositivos sincronizados"
+        },
+        "trialCta": "Prueba gratis por 30 días"
+      }
+    },
+    "buttons": {
+      "current": "Plan actual",
+      "upgrade": "Mejorar",
+      "downgrade": "Degradar",
+      "manage": "Gestionar"
+    },
+    "history": {
+      "title": "Historial de facturación",
+      "invoice": "Factura",
+      "invoiceLabel": "Factura {number}",
+      "pdf": "PDF",
+      "date": "Fecha",
+      "plan": "Plan",
+      "amount": "Importe",
+      "download": "Descargar PDF",
+      "open": "Abrir",
+      "empty": {
+        "title": "Aún no hay facturas",
+        "description": "Tus facturas aparecerán aquí una vez que tengas actividad de facturación."
+      }
+    }
   }
 }

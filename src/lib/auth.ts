@@ -1,9 +1,15 @@
+import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
 import slugify from "slugify";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
 import { getDefaultOrganization } from "@/modules/auth/server/utils";
+import { plans } from "@/modules/billing/plans";
+import {
+	authorizeSubscription,
+	onSubscriptionComplete,
+} from "@/modules/billing/server/subscriptions";
 import {
 	sendInvitationEmail,
 	sendPasswordResetEmail,
@@ -14,6 +20,9 @@ import { getPreferredLanguage } from "@/modules/i18n/utils";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { env } from "./env";
+import { isStripeEnabled, stripeClient } from "./stripe";
+
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? "";
 
 /**
  * Better Auth Configuration
@@ -40,6 +49,21 @@ export const auth = betterAuth({
 				required: false,
 				defaultValue: defaultLocale, // Default locale for new users
 				input: true, // Allow users to set this field during signup
+			},
+		},
+		changeEmail: {
+			enabled: true,
+			// Email sending function
+			sendChangeEmailVerification: async ({ user, newEmail, url }, request) => {
+				const preferredLanguage =
+					(user as schema.User).language ?? getPreferredLanguage(request);
+
+				await sendVerificationEmail({
+					to: newEmail,
+					userName: user.name || undefined,
+					verificationUrl: url,
+					locale: preferredLanguage,
+				});
 			},
 		},
 	},
@@ -81,7 +105,9 @@ export const auth = betterAuth({
 	// Plugins
 	plugins: [
 		// Admin plugin for system-wide user management
-		admin(),
+		admin({
+			impersonationSessionDuration: 60 * 60 * 24 * 7, // 7 days
+		}),
 
 		organization({
 			// Teams configuration
@@ -123,6 +149,23 @@ export const auth = betterAuth({
 				});
 			},
 		}),
+
+		// Stripe plugin for payment integration (only if API key is provided)
+		...(isStripeEnabled && stripeClient
+			? [
+					stripe({
+						stripeClient,
+						stripeWebhookSecret: stripeWebhookSecret,
+						createCustomerOnSignUp: true,
+						subscription: {
+							enabled: true,
+							plans: plans,
+							authorizeReference: authorizeSubscription,
+							onSubscriptionComplete: onSubscriptionComplete,
+						},
+					}),
+				]
+			: []),
 	],
 
 	// Email verification configuration
@@ -203,7 +246,11 @@ export const auth = betterAuth({
 	// Session configuration
 	session: {
 		expiresIn: 60 * 60 * 24 * 7, // 7 days
-		updateAge: 60 * 60 * 24, // 1 day
+		updateAge: 60 * 60 * 24 * 7, // 7 days (every 7 days the session is updated)
+		cookieCache: {
+			enabled: true,
+			maxAge: 60 * 5, // 5 minutes
+		},
 	},
 
 	// Advanced configuration

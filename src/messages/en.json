@@ -33,7 +33,8 @@
     "security": "Security",
     "organization": "Organization",
     "members": "Members",
-    "general": "General"
+    "general": "General",
+    "billing": "Billing"
   },
   "homePage": {
     "title": "Welcome to this boilerplate",
@@ -61,7 +62,7 @@
     "welcome": {
       "subject": "Welcome to {appName}!",
       "greeting": "Hi {userName},",
-      "title": "🎉 Welcome to {appName}!",
+      "title": "Welcome to {appName}!",
       "congratulations": "Congratulations! Your email has been verified and your {appName} account is now active. We're excited to have you on board and can't wait to see what you'll build with our platform.",
       "getStarted": "Get Started",
       "nextSteps": "Here's what you can do next:",
@@ -88,29 +89,31 @@
       "subject": "Verify your email address",
       "greeting": "Hi there,",
       "title": "Verify your email address",
-      "description": "Thanks for signing up for {appName}! To complete your account setup and ensure you receive important updates, please verify your email address by clicking the button below.",
+      "description": "To complete your account setup and ensure you receive important updates, please verify your email address by clicking the button below.",
       "verifyButton": "Verify Email Address",
       "alternativeLink": "If the button above doesn't work, you can also copy and paste this link into your browser:",
-      "linkExpiry": "This verification link will expire in 24 hours for security reasons.",
+      "linkExpiry": "This verification link will expire in {expirationHours} hours for security reasons.",
       "noAccount": "If you didn't create an account with {appName}, you can safely ignore this email.",
+      "accountDetails": "Account Details:",
+      "verificationRequested": "Verification requested:",
       "footer": "You're receiving this email because someone signed up for {appName} using this email address.",
       "copyright": "© {year} {appName}. All rights reserved."
     },
     "invitation": {
-      "subject": "You've been invited to join {appName}",
+      "subject": "You've been invited to join {organizationName} on {appName}",
       "greeting": "Hi there,",
-      "title": "You've been invited!",
-      "invitedBy": "{inviterName} has invited you to join {appName}.",
+      "title": "You're Invited to Join {organizationName}!",
+      "invitedBy": "{inviterName} ({inviterEmail}) has invited you to join {organizationName} as a {role} on {appName}.",
       "description": "Join thousands of users who are already using {appName} to streamline their workflow and boost productivity.",
       "acceptInvitation": "Accept Invitation",
-      "alternativeLink": "If the button above doesn't work, you can also copy and paste this link into your browser:",
+      "alternativeLink": "If the button above doesn't work, copy and paste this link into your browser:",
       "linkExpiry": "This invitation link will expire in 7 days.",
       "features": "What awaits you:",
       "feature1": "✨ Intuitive project management tools",
       "feature2": "👥 Seamless team collaboration",
       "feature3": "📊 Powerful analytics and reporting",
       "feature4": "🔒 Enterprise-grade security",
-      "footer": "You're receiving this email because {inviterName} invited you to join {appName}.",
+      "footer": "If you did not expect this invitation, you can safely ignore this email.",
       "copyright": "© {year} {appName}. All rights reserved."
     },
     "passwordReset": {
@@ -118,7 +121,44 @@
       "greeting": "Hi there,",
       "title": "Reset your password",
       "description": "We received a request to reset your password. To proceed, please click the button below.",
-      "resetButton": "Reset Password"
+      "resetButton": "Reset Password",
+      "alternativeLink": "If the button above doesn't work, you can also copy and paste this link into your browser:",
+      "linkExpiry": "This password reset link will expire in 24 hours for security reasons.",
+      "noRequest": "If you didn't request a password reset, you can safely ignore this email.",
+      "footer": "You're receiving this email because someone requested a password reset for your {appName} account.",
+      "copyright": "© {year} {appName}. All rights reserved."
+    },
+    "subscription": {
+      "subject": "Your {appName} subscription is now active!",
+      "greeting": "Hi {userName},",
+      "title": "Your Subscription is Active!",
+      "confirmation": "Great news! Your subscription to {planName} has been successfully activated. You now have access to all premium features and can make the most of your {appName} experience.",
+      "subscriptionDetails": "Subscription Details",
+      "plan": "Plan",
+      "price": "Price",
+      "perMonth": "/month",
+      "nextBilling": "Next billing date",
+      "accessDashboard": "Access Dashboard",
+      "whatsNext": "What's next?",
+      "step1": "Explore premium features - Unlock the full potential of your account",
+      "step2": "Set up integrations - Connect with your favorite tools and services",
+      "step3": "Customize your workspace - Tailor the experience to your needs",
+      "step4": "Manage your subscription - View billing details and update preferences",
+      "premiumFeatures": "Your Premium Features Include:",
+      "feature1Title": "🚀 Advanced Analytics",
+      "feature1Description": "Get detailed insights and reports to track your progress",
+      "feature2Title": "⚡ Priority Support",
+      "feature2Description": "Receive faster response times and dedicated assistance",
+      "feature3Title": "🔧 Advanced Integrations",
+      "feature3Description": "Connect with enterprise tools and custom workflows",
+      "feature4Title": "👥 Team Collaboration",
+      "feature4Description": "Enhanced team features and unlimited collaborators",
+      "billingInfo": "Your subscription will automatically renew on your next billing date. You can manage your subscription, update payment methods, or cancel anytime from your account dashboard.",
+      "accountDetails": "Subscription Information:",
+      "email": "Email",
+      "subscriptionDate": "Subscription started:",
+      "footer": "You're receiving this email because you successfully subscribed to a plan on {appName}. If you have any questions about your subscription, please don't hesitate to contact our support team.",
+      "copyright": "© {year} {appName}. All rights reserved."
     }
   },
   "errors": {
@@ -638,5 +678,73 @@
     "ACCOUNTS_INSTRUCTIONS": "Sign in to an additional account.",
     "ACCOUNTS_DESCRIPTION": "Manage your currently signed in accounts.",
     "ACCOUNTS": "Accounts"
+  },
+  "billing": {
+    "title": "Billing",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "monthlyPeriod": "/month",
+    "yearlyPeriod": "/year",
+    "plans": {
+      "free": {
+        "name": "Free plan",
+        "features": {
+          "1": "2 GB of cloud storage",
+          "2": "Locally stored files",
+          "3": "1 individual user",
+          "4": "1 devices synced"
+        },
+        "cta": "Downgrade"
+      },
+      "basic": {
+        "name": "Basic plan",
+        "features": {
+          "1": "10 GB of cloud storage",
+          "2": "Locally stored files",
+          "3": "Up to 5 individual users",
+          "4": "Up to 3 devices synced"
+        }
+      },
+      "plus": {
+        "name": "Plus plan",
+        "features": {
+          "1": "20 GB of cloud storage",
+          "2": "Locally stored files",
+          "3": "Up to 10 individual users",
+          "4": "Up to 10 devices synced"
+        }
+      },
+      "pro": {
+        "name": "Pro plan",
+        "features": {
+          "1": "50 GB of cloud storage",
+          "2": "Locally and cloud stored files",
+          "3": "Up to 15 individual users",
+          "4": "Up to 30 devices synced"
+        },
+        "trialCta": "Try for free for 30 days"
+      }
+    },
+    "buttons": {
+      "current": "Current plan",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade",
+      "manage": "Manage"
+    },
+    "history": {
+      "title": "Billing history",
+      "invoice": "Invoice",
+      "invoiceLabel": "Invoice {number}",
+      "pdf": "PDF",
+      "date": "Date",
+      "plan": "Plan",
+      "amount": "Amount",
+      "download": "Download PDF",
+      "open": "Open",
+      "empty": {
+        "title": "No invoices yet",
+        "description": "Your invoices will appear here once you have billing activity."
+      }
+    }
   }
 }

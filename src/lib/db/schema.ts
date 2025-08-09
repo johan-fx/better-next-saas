@@ -1,6 +1,7 @@
 import {
 	boolean,
 	index,
+	integer,
 	pgTable,
 	text,
 	timestamp,
@@ -50,6 +51,7 @@ export const user = pgTable("user", {
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires"),
 	language: text("language").default("en"),
+	stripeCustomerId: text("stripe_customer_id"),
 });
 
 export const session = pgTable("session", {
@@ -183,6 +185,23 @@ export const userPreference = pgTable(
 	],
 );
 
+export const subscription = pgTable("subscription", {
+	id: text("id").primaryKey(),
+	plan: text("plan").notNull(), // The name of the subscription plan
+	referenceId: text("reference_id").notNull(), // The ID this subscription is associated with (user ID by default)
+	stripeCustomerId: text("stripe_customer_id"), // The Stripe customer ID
+	stripeSubscriptionId: text("stripe_subscription_id"), // The Stripe subscription ID
+	status: text("status").notNull(), // The status of the subscription (active, canceled, etc.)
+	periodStart: timestamp("period_start"), // Start date of the current billing period
+	periodEnd: timestamp("period_end"), // End date of the current billing period
+	cancelAtPeriodEnd: boolean("cancel_at_period_end"), // Whether the subscription will be canceled at the end of the period
+	seats: integer("seats"), // Number of seats for team plans
+	trialStart: timestamp("trial_start"), // Start date of the trial period
+	trialEnd: timestamp("trial_end"), // End date of the trial period
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Export types for type-safe database operations
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
@@ -210,3 +229,7 @@ export type Team = typeof team.$inferSelect;
 export type NewTeam = typeof team.$inferInsert;
 export type TeamMember = typeof teamMember.$inferSelect;
 export type NewTeamMember = typeof teamMember.$inferInsert;
+
+// Subscription types
+export type Subscription = typeof subscription.$inferSelect;
+export type NewSubscription = typeof subscription.$inferInsert;

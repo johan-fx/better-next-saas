@@ -21,7 +21,7 @@ import esMessages from "@/messages/es.json";
 import { TAILWIND_CONFIG } from "../config";
 import { createEmailVariables, replaceVariables } from "../utils/variables";
 
-interface WelcomeEmailProps {
+interface SubscriptionUpgradeEmailProps {
 	/**
 	 * User's name
 	 */
@@ -34,6 +34,22 @@ interface WelcomeEmailProps {
 	 * Dashboard/app URL
 	 */
 	dashboardUrl: string;
+	/**
+	 * Subscription plan name
+	 */
+	planName: string;
+	/**
+	 * Subscription price (formatted)
+	 */
+	planPrice: string;
+	/**
+	 * Billing cycle (monthly, yearly, etc.)
+	 */
+	billingCycle: string;
+	/**
+	 * Next billing date (formatted)
+	 */
+	nextBillingDate: string;
 	/**
 	 * User's preferred locale
 	 */
@@ -50,32 +66,36 @@ interface WelcomeEmailProps {
 	 * Pre-translated text content
 	 * This object contains all the translated strings for the email
 	 */
-	translations?: typeof enMessages.email.welcome;
+	translations?: typeof enMessages.email.subscription;
 }
 
 // Translation mapping - now sourced from message files
 const availableTranslations = {
-	en: enMessages.email.welcome,
-	es: esMessages.email.welcome,
+	en: enMessages.email.subscription,
+	es: esMessages.email.subscription,
 };
 
 /**
- * Internationalized Welcome Email Template (Props-based)
+ * Internationalized Subscription Notification Email Template (Props-based)
  *
- * Beautiful welcome email sent after successful email verification
+ * Beautiful subscription notification email sent after successful subscription creation
  * Supports multiple languages through pre-translated props
  * This approach allows the email to work with react-email dev server
  * since all translations are passed as props from the server-side code
  */
-export default function WelcomeEmail({
+export default function SubscriptionUpgradeEmail({
 	userName,
 	userEmail,
 	dashboardUrl,
+	planName,
+	planPrice,
+	billingCycle,
+	nextBillingDate,
 	locale = "en",
 	appName = "My App",
 	logoUrl,
 	translations: overrideTranslations,
-}: WelcomeEmailProps) {
+}: SubscriptionUpgradeEmailProps) {
 	const currentYear = new Date().getFullYear();
 	const translations =
 		overrideTranslations ||
@@ -86,6 +106,10 @@ export default function WelcomeEmail({
 		appName,
 		userName,
 		userEmail,
+		planName,
+		planPrice,
+		billingCycle,
+		nextBillingDate,
 		year: currentYear,
 	});
 
@@ -120,7 +144,7 @@ export default function WelcomeEmail({
 
 						{/* Main Content */}
 						<Section className="px-5">
-							{/* Welcome Message */}
+							{/* Subscription Confirmation Message */}
 							<Text className="text-3xl leading-tight font-bold text-gray-800 text-center m-0 mb-6">
 								{replaceVariables(translations.title, variables)}
 							</Text>
@@ -129,24 +153,72 @@ export default function WelcomeEmail({
 								{replaceVariables(translations.greeting, variables)}
 							</Text>
 
-							<Text className="text-base leading-relaxed text-gray-600 m-0 mb-4">
-								{replaceVariables(translations.congratulations, variables)}
+							<Text className="text-base leading-relaxed text-gray-600 m-0 mb-6">
+								{replaceVariables(translations.confirmation, variables)}
 							</Text>
 
-							{/* Get Started Button */}
+							{/* Subscription Details Card */}
+							<Section className="my-8 p-6 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+								<Text className="text-lg font-bold text-gray-800 m-0 mb-4 text-center">
+									{translations.subscriptionDetails}
+								</Text>
+
+								<div className="space-y-3">
+									<Row>
+										<Column className="w-1/2">
+											<Text className="text-sm font-semibold text-gray-700 m-0">
+												{translations.plan}:
+											</Text>
+										</Column>
+										<Column className="w-1/2">
+											<Text className="text-sm text-gray-600 m-0">
+												{planName}
+											</Text>
+										</Column>
+									</Row>
+
+									<Row>
+										<Column className="w-1/2">
+											<Text className="text-sm font-semibold text-gray-700 m-0">
+												{translations.price}:
+											</Text>
+										</Column>
+										<Column className="w-1/2">
+											<Text className="text-sm text-gray-600 m-0">
+												{planPrice} / {billingCycle}
+											</Text>
+										</Column>
+									</Row>
+
+									<Row>
+										<Column className="w-1/2">
+											<Text className="text-sm font-semibold text-gray-700 m-0">
+												{translations.nextBilling}:
+											</Text>
+										</Column>
+										<Column className="w-1/2">
+											<Text className="text-sm text-gray-600 m-0">
+												{nextBillingDate}
+											</Text>
+										</Column>
+									</Row>
+								</div>
+							</Section>
+
+							{/* Access Dashboard Button */}
 							<Section className="text-center my-8">
 								<Button
 									href={dashboardUrl}
 									className="bg-primary hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-md inline-block no-underline text-center mx-auto"
 								>
-									{translations.getStarted}
+									{translations.accessDashboard}
 								</Button>
 							</Section>
 
-							{/* Next Steps */}
+							{/* What's Next Section */}
 							<Section className="my-8 p-6 bg-gray-50 rounded-lg">
 								<Text className="text-lg font-bold text-gray-800 m-0 mb-4">
-									{translations.nextSteps}
+									{translations.whatsNext}
 								</Text>
 
 								<div className="m-0">
@@ -165,12 +237,12 @@ export default function WelcomeEmail({
 								</div>
 							</Section>
 
-							{/* Features Highlight */}
+							{/* Premium Features Highlight */}
 							<Hr className="border-gray-200 my-8" />
 
 							<Section className="my-8">
 								<Text className="text-lg font-bold text-gray-800 m-0 mb-6 text-center">
-									{replaceVariables(translations.features, variables)}
+									{translations.premiumFeatures}
 								</Text>
 
 								<Row>
@@ -212,11 +284,11 @@ export default function WelcomeEmail({
 								</Row>
 							</Section>
 
-							{/* Support Information */}
+							{/* Billing Information */}
 							<Hr className="border-gray-200 my-8" />
 
 							<Text className="text-sm leading-relaxed text-gray-600 m-0 mb-6 text-center">
-								{translations.support}
+								{translations.billingInfo}
 							</Text>
 
 							{/* Account Info */}
@@ -225,10 +297,10 @@ export default function WelcomeEmail({
 									<strong>{translations.accountDetails}</strong>
 								</Text>
 								<Text className="text-sm leading-normal text-gray-600 m-0 mb-1">
-									Email: {userEmail}
+									{translations.email}: {userEmail}
 								</Text>
 								<Text className="text-sm leading-normal text-gray-600 m-0 mb-1">
-									{translations.accountCreated}{" "}
+									{translations.subscriptionDate}{" "}
 									{new Date().toLocaleString(locale)}
 								</Text>
 							</Section>

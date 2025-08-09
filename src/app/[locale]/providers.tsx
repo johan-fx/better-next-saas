@@ -32,7 +32,6 @@ export function ClientProviders({ children }: { children: ReactNode }) {
 					router.refresh();
 				}}
 				Link={Link}
-				changeEmail={false}
 				deleteUser={{ verification: true }}
 				redirectTo="/auth/welcome"
 				settings={{
