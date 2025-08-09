@@ -95,7 +95,7 @@ export const InvoicesTable = () => {
 								<a
 									href={row.original.pdfUrl}
 									target="_blank"
-									rel="noreferrer"
+								rel="noopener noreferrer"
 									title={t("history.download")}
 									aria-label={t("history.download")}
 								>
