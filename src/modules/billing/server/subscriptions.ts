@@ -5,7 +5,10 @@ import type Stripe from "stripe";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
-import { sendSubscriptionUpgradeEmail } from "@/modules/emails";
+import {
+	sendSubscriptionCancellationEmail,
+	sendSubscriptionUpgradeEmail,
+} from "@/modules/emails";
 
 export async function authorizeSubscription({
 	user,
@@ -132,15 +135,62 @@ export async function onSubscriptionUpdate({
 
 export async function onSubscriptionCancel({
 	subscription,
+	cancellationDetails,
 }: {
-	event: Stripe.Event;
+	event?: Stripe.Event;
 	subscription: Subscription;
 	stripeSubscription: Stripe.Subscription;
-	cancellationDetails: Stripe.Subscription.CancellationDetails;
+	cancellationDetails?: Stripe.Subscription.CancellationDetails | null;
 }) {
 	// Called when a subscription is canceled
-	// await sendCancellationEmail(subscription.referenceId);
-	console.log(`Subscription ${subscription.id} cancelled`);
+	try {
+		const [membership] = await db
+			.select()
+			.from(schema.member)
+			.where(
+				and(
+					eq(schema.member.organizationId, subscription.referenceId),
+					eq(schema.member.role, "owner"),
+				),
+			);
+
+		const [user] = await db
+			.select()
+			.from(schema.user)
+			.where(eq(schema.user.id, membership?.userId));
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const userEmail = user.email;
+		const userName = user.name;
+
+		const effectiveDate =
+			subscription.cancelAtPeriodEnd && subscription.periodEnd
+				? new Date(subscription.periodEnd).toLocaleDateString()
+				: new Date().toLocaleDateString();
+
+		const reason =
+			cancellationDetails?.comment ??
+			cancellationDetails?.feedback ??
+			cancellationDetails?.reason ??
+			undefined;
+
+		await sendSubscriptionCancellationEmail({
+			to: userEmail,
+			userName,
+			dashboardUrl: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
+			planName: subscription.plan,
+			effectiveDate,
+			cancellationReason: reason,
+			locale: user.language ?? "en",
+		});
+
+		console.log(`✅ Subscription cancellation email sent to ${userEmail}`);
+	} catch (error) {
+		console.error("❌ Failed to send subscription cancellation email:", error);
+	}
 }
 
 export async function onSubscriptionDeleted({

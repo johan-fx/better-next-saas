@@ -160,6 +160,22 @@
       "subscriptionDate": "Subscription started:",
       "footer": "You're receiving this email because you successfully subscribed to a plan on {appName}. If you have any questions about your subscription, please don't hesitate to contact our support team.",
       "copyright": "© {year} {appName}. All rights reserved."
+    },
+    "subscriptionCancellation": {
+      "subject": "Your {appName} subscription has been cancelled",
+      "greeting": "Hi {userName},",
+      "title": "Subscription Cancelled",
+      "cancellationMessage": "Your subscription to {planName} has been cancelled. You will retain access until {effectiveDate}. We're sorry to see you go.",
+      "details": "Cancellation Details",
+      "plan": "Plan",
+      "effectiveDateLabel": "Effective date",
+      "cancellationReasonLabel": "Cancellation reason",
+      "accessDashboard": "Access Dashboard",
+      "accountDetails": "Account Information:",
+      "email": "Email",
+      "cancellationRequested": "Cancellation requested:",
+      "footer": "You're receiving this email because you requested to cancel your subscription on {appName}. If this wasn't you, please contact our support team immediately.",
+      "copyright": "© {year} {appName}. All rights reserved."
     }
   },
   "errors": {

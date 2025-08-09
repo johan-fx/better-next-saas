@@ -8,6 +8,7 @@ import { getDefaultOrganization } from "@/modules/auth/server/utils";
 import { plans } from "@/modules/billing/plans";
 import {
 	authorizeSubscription,
+	onSubscriptionCancel,
 	onSubscriptionComplete,
 } from "@/modules/billing/server/subscriptions";
 import {
@@ -162,6 +163,7 @@ export const auth = betterAuth({
 							plans: plans,
 							authorizeReference: authorizeSubscription,
 							onSubscriptionComplete: onSubscriptionComplete,
+							onSubscriptionCancel: onSubscriptionCancel,
 						},
 					}),
 				]

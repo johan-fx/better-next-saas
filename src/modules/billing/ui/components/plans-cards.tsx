@@ -16,7 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
-import { BillingPeriod, type Plan, plans } from "../../plans";
+import { BillingPeriod, type Plan } from "../../plans";
 import { UpgradeSubscriptionButton } from "../components/upgrade-subscription-button";
 
 function formatAmountCents(amount: number, currency: string) {
@@ -48,7 +48,7 @@ export const PlansCards = ({
 		trpc.billing.getActiveSubscription.queryOptions(),
 	);
 
-	const currentPlan = plans.find(
+	const currentPlan = plans?.find(
 		(plan) =>
 			plan.name.toLowerCase() === activeSubscription?.plan?.toLowerCase(),
 	);

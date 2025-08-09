@@ -11,6 +11,8 @@ export type { SendPasswordResetEmailOptions } from "./password-reset";
 export { sendPasswordResetEmail } from "./password-reset";
 export type { SendSubscriptionUpgradeEmailOptions } from "./subscription";
 export { sendSubscriptionUpgradeEmail } from "./subscription";
+export type { SendSubscriptionCancellationEmailOptions } from "./subscription-cancellation";
+export { sendSubscriptionCancellationEmail } from "./subscription-cancellation";
 
 // Export all service types
 export type { SendVerificationEmailOptions } from "./verification";

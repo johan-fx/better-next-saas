@@ -25,6 +25,7 @@ export {
 export type {
 	SendInvitationEmailOptions,
 	SendPasswordResetEmailOptions,
+	SendSubscriptionCancellationEmailOptions,
 	SendSubscriptionUpgradeEmailOptions,
 	SendVerificationEmailOptions,
 	SendWelcomeEmailOptions,
@@ -33,6 +34,7 @@ export type {
 export {
 	sendInvitationEmail,
 	sendPasswordResetEmail,
+	sendSubscriptionCancellationEmail,
 	sendSubscriptionUpgradeEmail,
 	sendVerificationEmail,
 	sendWelcomeEmail,
@@ -40,6 +42,7 @@ export {
 // Re-export templates for direct access if needed
 export { default as EmailVerificationTemplate } from "./templates/email-verification";
 export { default as InvitationEmailTemplate } from "./templates/invitation";
+export { default as SubscriptionCancellationEmailTemplate } from "./templates/subscription-cancellation";
 export { default as SubscriptionUpgradeEmailTemplate } from "./templates/subscription-upgrade";
 export { default as WelcomeEmailTemplate } from "./templates/welcome";
 // Export utilities
