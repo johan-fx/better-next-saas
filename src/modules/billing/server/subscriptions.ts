@@ -16,11 +16,6 @@ export async function authorizeSubscription({
 	referenceId: string;
 	action: string;
 }) {
-	console.log("🔵 Authorize subscription");
-	console.dir(user, { depth: null });
-	console.log("🔵 Reference ID", referenceId);
-	console.log("🔵 Action", action);
-
 	// Check if the user has permission to manage subscriptions for this reference
 	if (
 		[
@@ -40,11 +35,9 @@ export async function authorizeSubscription({
 			)
 			.limit(1);
 
-		console.log("🟢 Membership found");
-		console.dir(membership, { depth: null });
-
 		return membership?.role === "owner";
 	}
+
 	return true;
 }
 
@@ -74,17 +67,6 @@ export async function onSubscriptionComplete({
 	plan: StripePlan;
 }) {
 	// Called when a subscription is successfully created
-	console.log(
-		`🔵 Subscription ${subscription.id} created for plan ${plan.name}`,
-	);
-
-	console.log("🔵 Subscription");
-	console.dir(subscription, { depth: null });
-	console.log("🔵 Plan");
-	console.dir(plan, { depth: null });
-	console.log("🔵 Stripe Subscription");
-	console.dir(stripeSubscription, { depth: null });
-
 	try {
 		const [membership] = await db
 			.select()
@@ -96,16 +78,10 @@ export async function onSubscriptionComplete({
 				),
 			);
 
-		console.log("🟢 Membership found");
-		console.dir(membership, { depth: null });
-
 		const [user] = await db
 			.select()
 			.from(schema.user)
 			.where(eq(schema.user.id, membership?.userId));
-
-		console.log("🟢 User found");
-		console.dir(user, { depth: null });
 
 		if (!user) {
 			throw new Error("User not found");
@@ -114,9 +90,6 @@ export async function onSubscriptionComplete({
 		const userEmail = user.email;
 		const userName = user.name;
 		const price = stripeSubscription.items.data[0]?.price;
-
-		console.log("🔵 Price");
-		console.dir(price, { depth: null });
 
 		// Format billing cycle and next billing date
 		const billingCycle = price?.recurring?.interval || "month";

@@ -13,9 +13,10 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+// Tabs were used previously for per-card switching; now the period will be controlled from parent
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
-import type { Plan } from "../../plans";
+import { BillingPeriod, type Plan } from "../../plans";
 import { UpgradeSubscriptionButton } from "../components/upgrade-subscription-button";
 
 function formatAmountCents(amount: number, currency: string) {
@@ -30,7 +31,11 @@ function formatAmountCents(amount: number, currency: string) {
 	}
 }
 
-export const PlansCards = () => {
+export const PlansCards = ({
+	period = BillingPeriod.MONTHLY,
+}: {
+	period?: BillingPeriod;
+}) => {
 	const trpc = useTRPC();
 	const t = useTranslations("billing");
 
@@ -48,7 +53,7 @@ export const PlansCards = () => {
 
 	const getButtonText = (plan: Plan) => {
 		if (isCurrentPlan(plan)) {
-			return t("buttons.current");
+			return t("buttons.manage");
 		} else if (Number(activeSubscription?.id ?? 0) > Number(plan?.id ?? 0)) {
 			return t("buttons.downgrade");
 		}
@@ -74,6 +79,8 @@ export const PlansCards = () => {
 					? Object.values(rawFeatures)
 					: [];
 				const isCurrent = isCurrentPlan(plan);
+				const unitAmount = plan.prices?.[period]?.unitAmount ?? 0;
+				const currency = plan.prices?.[period]?.currency ?? "USD";
 				return (
 					<Card
 						key={plan.name}
@@ -86,12 +93,9 @@ export const PlansCards = () => {
 									<Badge variant="secondary">{t("buttons.current")}</Badge>
 								) : null}
 							</CardTitle>
-							<CardDescription className="text-lg font-semibold">
-								{formatAmountCents(
-									plan.price?.unitAmount ?? 0,
-									plan.price?.currency ?? "USD",
-								)}
-								{t("perMonth")}
+							<CardDescription className="text-2xl font-semibold flex items-baseline gap-1">
+								{formatAmountCents(unitAmount, currency)}
+								<span className="text-sm">{t(`${period}Period`)}</span>
 							</CardDescription>
 						</CardHeader>
 						<Separator />
@@ -109,8 +113,8 @@ export const PlansCards = () => {
 						<CardFooter className="p-4">
 							<UpgradeSubscriptionButton
 								plan={plan}
+								period={period}
 								buttonText={getButtonText(plan)}
-								disabled={isCurrent}
 							/>
 						</CardFooter>
 					</Card>

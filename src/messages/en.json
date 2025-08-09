@@ -681,7 +681,10 @@
   },
   "billing": {
     "title": "Billing",
-    "perMonth": "/mes",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "monthlyPeriod": "/month",
+    "yearlyPeriod": "/year",
     "plans": {
       "free": {
         "name": "Free plan",
@@ -725,16 +728,23 @@
     "buttons": {
       "current": "Current plan",
       "upgrade": "Upgrade",
-      "downgrade": "Downgrade"
+      "downgrade": "Downgrade",
+      "manage": "Manage"
     },
     "history": {
       "title": "Billing history",
       "invoice": "Invoice",
+      "invoiceLabel": "Invoice {number}",
+      "pdf": "PDF",
       "date": "Date",
       "plan": "Plan",
       "amount": "Amount",
       "download": "Download PDF",
-      "open": "Open"
+      "open": "Open",
+      "empty": {
+        "title": "No invoices yet",
+        "description": "Your invoices will appear here once you have billing activity."
+      }
     }
   }
 }

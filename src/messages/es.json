@@ -682,7 +682,10 @@
   },
   "billing": {
     "title": "Facturación",
-    "perMonth": "/mes",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "monthlyPeriod": "/mes",
+    "yearlyPeriod": "/año",
     "plans": {
       "free": {
         "name": "Plan gratis",
@@ -726,16 +729,23 @@
     "buttons": {
       "current": "Plan actual",
       "upgrade": "Mejorar",
-      "downgrade": "Degradar"
+      "downgrade": "Degradar",
+      "manage": "Gestionar"
     },
     "history": {
       "title": "Historial de facturación",
       "invoice": "Factura",
+      "invoiceLabel": "Factura {number}",
+      "pdf": "PDF",
       "date": "Fecha",
       "plan": "Plan",
       "amount": "Importe",
       "download": "Descargar PDF",
-      "open": "Abrir"
+      "open": "Abrir",
+      "empty": {
+        "title": "Aún no hay facturas",
+        "description": "Tus facturas aparecerán aquí cuando tengas actividad de facturación."
+      }
     }
   }
 }

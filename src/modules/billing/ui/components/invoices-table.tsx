@@ -7,7 +7,7 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { Download, Loader2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -61,9 +61,13 @@ export const InvoicesTable = () => {
 				cell: ({ row }) => (
 					<div className="flex items-center gap-3">
 						<div className="rounded-md border p-1 text-[10px] font-medium">
-							PDF
+							{t("history.pdf")}
 						</div>
-						<span>Invoice {row.original.number ?? row.original.id}</span>
+						<span>
+							{t("history.invoiceLabel", {
+								number: row.original.number ?? row.original.id,
+							})}
+						</span>
 					</div>
 				),
 			},
@@ -88,7 +92,13 @@ export const InvoicesTable = () => {
 					<div className="flex items-center justify-end gap-2">
 						{row.original.pdfUrl ? (
 							<Button asChild variant="ghost" size="icon" className="h-8 w-8">
-								<a href={row.original.pdfUrl} target="_blank" rel="noreferrer">
+								<a
+									href={row.original.pdfUrl}
+									target="_blank"
+									rel="noreferrer"
+									title={t("history.download")}
+									aria-label={t("history.download")}
+								>
 									<Download className="h-4 w-4" />
 								</a>
 							</Button>
@@ -140,10 +150,12 @@ export const InvoicesTable = () => {
 					))
 				) : (
 					<TableRow>
-						<TableCell colSpan={columns.length} className="h-24 text-center">
-							<div className="flex items-center justify-center gap-2 text-muted-foreground">
-								<Loader2 className="h-4 w-4 animate-spin" />
-								{t("history.title")}
+						<TableCell colSpan={columns.length} className="h-32 text-center">
+							<div className="flex flex-col items-center justify-center gap-1 py-6 text-muted-foreground">
+								<div className="text-sm font-medium">
+									{t("history.empty.title")}
+								</div>
+								<div className="text-xs">{t("history.empty.description")}</div>
 							</div>
 						</TableCell>
 					</TableRow>

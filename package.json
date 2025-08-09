@@ -27,7 +27,7 @@
     "translate": "npx -y languine@latest translate"
   },
   "dependencies": {
-    "@better-auth/stripe": "^1.3.4",
+    "@better-auth/stripe": "1.3.5-beta.5",
     "@daveyplate/better-auth-ui": "^2.0.12",
     "@formatjs/intl-localematcher": "^0.6.1",
     "@hookform/resolvers": "^5.1.1",
@@ -42,7 +42,7 @@
     "@trpc/client": "^11.4.3",
     "@trpc/server": "^11.4.3",
     "@trpc/tanstack-react-query": "^11.4.3",
-    "better-auth": "^1.3.4",
+    "better-auth": "1.3.5-beta.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

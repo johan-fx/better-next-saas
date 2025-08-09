@@ -1,3 +1,4 @@
+import type { Subscription } from "@better-auth/stripe";
 import { TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
@@ -8,7 +9,7 @@ import {
 	createTRPCRouter,
 	protectedProcedure,
 } from "@/trpc/init";
-import { type Plan, plans } from "../plans";
+import { mapStripeToAppSubscription, type Plan, plans } from "../plans";
 
 export const billingRouter = createTRPCRouter({
 	// Return configured plans enriched with Stripe price information when available
@@ -23,16 +24,40 @@ export const billingRouter = createTRPCRouter({
 		const result = await Promise.all(
 			plans.map(async (plan) => {
 				try {
-					const price = await stripe.prices.retrieve(plan.priceId);
+					// Retrieve both monthly and yearly prices if available
+					const monthlyPriceId = plan.priceId;
+					const yearlyPriceId = plan.annualDiscountPriceId;
+
+					const [monthly, yearly] = await Promise.all([
+						monthlyPriceId
+							? stripe.prices.retrieve(monthlyPriceId)
+							: Promise.resolve(undefined as unknown as Stripe.Price),
+						yearlyPriceId
+							? stripe.prices.retrieve(yearlyPriceId)
+							: Promise.resolve(undefined as unknown as Stripe.Price),
+					]);
+
 					return {
 						...plan,
-						price: {
-							unitAmount: price.unit_amount ?? undefined,
-							currency: price.currency ?? undefined,
-							interval: price.recurring?.interval ?? undefined,
+						// Provide both monthly and yearly enriched prices when available
+						prices: {
+							monthly: monthly
+								? {
+										unitAmount: monthly.unit_amount ?? undefined,
+										currency: monthly.currency ?? undefined,
+										interval: monthly.recurring?.interval ?? undefined,
+									}
+								: undefined,
+							yearly: yearly
+								? {
+										unitAmount: yearly.unit_amount ?? undefined,
+										currency: yearly.currency ?? undefined,
+										interval: yearly.recurring?.interval ?? undefined,
+									}
+								: undefined,
 						},
 					} as Plan;
-				} catch (_) {
+				} catch {
 					return plan;
 				}
 			}),
@@ -43,18 +68,48 @@ export const billingRouter = createTRPCRouter({
 
 	getActiveSubscription: protectedProcedure.query(async ({ ctx }) => {
 		try {
-			const activeSubscriptions = await auth.api.listActiveSubscriptions({
-				query: {
-					referenceId: ctx.auth.session.activeOrganizationId ?? undefined,
-				},
-				headers: await headers(),
-			});
-			const activeSubscription =
-				activeSubscriptions.find(
-					(subscription) => subscription.status === "active",
-				) ?? activeSubscriptions[0];
+			const appSubscriptions: Subscription[] =
+				await auth.api.listActiveSubscriptions({
+					query: {
+						referenceId: ctx.auth.session.activeOrganizationId ?? undefined,
+					},
+					headers: await headers(),
+				});
 
-			return activeSubscription ?? null;
+			const activeAppSubscription =
+				appSubscriptions.find(
+					(subscription) => subscription.status === "active",
+				) ?? appSubscriptions[0];
+
+			const customerId = activeAppSubscription?.stripeCustomerId;
+
+			if (!env.STRIPE_SECRET_KEY || !customerId) {
+				return activeAppSubscription ?? null;
+			}
+
+			// Fetch the real active subscription from Stripe
+			const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+			const stripeSubscriptions = await stripe.subscriptions.list({
+				customer: customerId,
+				status: "active",
+				expand: ["data.items.data.price", "data.items.data.plan"],
+			});
+
+			const stripeActiveSubscription = stripeSubscriptions.data[0] as
+				| Stripe.Subscription
+				| undefined;
+
+			if (!stripeActiveSubscription) {
+				return activeAppSubscription ?? null;
+			}
+
+			const activeSubscription = mapStripeToAppSubscription(
+				stripeActiveSubscription,
+				ctx.auth.session.activeOrganizationId ?? undefined,
+				plans,
+			);
+
+			return activeSubscription;
 		} catch (err) {
 			console.log(err);
 			throw new TRPCError({
