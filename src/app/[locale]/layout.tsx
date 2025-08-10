@@ -97,7 +97,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 								<ConsentManagerProvider
 									options={{
 										mode: "c15t",
-										backendURL: `${env.NEXT_PUBLIC_API_URL}/api/c15t`,
+										backendURL: `${env.NEXT_PUBLIC_API_URL ?? ""}/api/c15t`,
 										consentCategories: ["necessary", "marketing"], // Optional: Specify which consent categories to show in the banner.
 										ignoreGeoLocation: env.NODE_ENV !== "production", // Useful for development to always view the banner.
 										translations: {
