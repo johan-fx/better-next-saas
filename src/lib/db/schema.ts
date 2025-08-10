@@ -2,6 +2,7 @@ import {
 	boolean,
 	index,
 	integer,
+	json,
 	pgTable,
 	text,
 	timestamp,
@@ -200,6 +201,105 @@ export const subscription = pgTable("subscription", {
 	trialEnd: timestamp("trial_end"), // End date of the trial period
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const subject = pgTable("subject", {
+	id: text("id").primaryKey(),
+	isIdentified: boolean("is_identified").notNull(),
+	externalId: text("external_id"),
+	identityProvider: text("identity_provider"),
+	lastIpAddress: text("last_ip_address"),
+	createdAt: timestamp("created_at").notNull(),
+	updatedAt: timestamp("updated_at").notNull(),
+	subjectTimezone: text("subject_timezone"),
+});
+
+export const consentPurpose = pgTable("consent_purpose", {
+	id: text("id").primaryKey(),
+	code: text("code").notNull(),
+	name: text("name").notNull(),
+	description: text("description").notNull(),
+	isEssential: boolean("is_essential").notNull(),
+	dataCategory: text("data_category"),
+	legalBasis: text("legal_basis"),
+	isActive: boolean("is_active").notNull(),
+	createdAt: timestamp("created_at").notNull(),
+	updatedAt: timestamp("updated_at").notNull(),
+});
+
+export const consentPolicy = pgTable("consent_policy", {
+	id: text("id").primaryKey(),
+	version: text("version").notNull(),
+	type: text("type").notNull(),
+	name: text("name").notNull(),
+	effectiveDate: timestamp("effective_date").notNull(),
+	expirationDate: timestamp("expiration_date"),
+	content: text("content").notNull(),
+	contentHash: text("content_hash").notNull(),
+	isActive: boolean("is_active").notNull(),
+	createdAt: timestamp("created_at").notNull(),
+});
+
+export const domain = pgTable("domain", {
+	id: text("id").primaryKey(),
+	name: text("name").notNull().unique(),
+	description: text("description"),
+	allowedOrigins: json("allowed_origins"),
+	isVerified: boolean("is_verified").notNull(),
+	isActive: boolean("is_active").notNull(),
+	createdAt: timestamp("created_at").notNull(),
+	updatedAt: timestamp("updated_at"),
+});
+
+export const consent = pgTable("consent", {
+	id: text("id").primaryKey(),
+	subjectId: text("subject_id")
+		.notNull()
+		.references(() => subject.id, { onDelete: "cascade" }),
+	domainId: text("domain_id")
+		.notNull()
+		.references(() => domain.id, { onDelete: "cascade" }),
+	purposeIds: json("purpose_ids"),
+	metadata: json("metadata"),
+	policyId: text("policy_id").references(() => consentPolicy.id, {
+		onDelete: "cascade",
+	}),
+	ipAddress: text("ip_address"),
+	userAgent: text("user_agent"),
+	status: text("status").notNull(),
+	withdrawalReason: text("withdrawal_reason"),
+	givenAt: timestamp("given_at").notNull(),
+	validUntil: timestamp("valid_until"),
+	isActive: boolean("is_active").notNull(),
+});
+
+export const consentRecord = pgTable("consent_record", {
+	id: text("id").primaryKey(),
+	subjectId: text("subject_id")
+		.notNull()
+		.references(() => subject.id, { onDelete: "cascade" }),
+	consentId: text("consent_id").references(() => consent.id, {
+		onDelete: "cascade",
+	}),
+	actionType: text("action_type").notNull(),
+	details: json("details"),
+	createdAt: timestamp("created_at").notNull(),
+});
+
+export const auditLog = pgTable("audit_log", {
+	id: text("id").primaryKey(),
+	entityType: text("entity_type").notNull(),
+	entityId: text("entity_id").notNull(),
+	actionType: text("action_type").notNull(),
+	subjectId: text("subject_id").references(() => subject.id, {
+		onDelete: "cascade",
+	}),
+	ipAddress: text("ip_address"),
+	userAgent: text("user_agent"),
+	changes: json("changes"),
+	metadata: json("metadata"),
+	createdAt: timestamp("created_at").notNull(),
+	eventTimezone: text("event_timezone").notNull(),
 });
 
 // Export types for type-safe database operations

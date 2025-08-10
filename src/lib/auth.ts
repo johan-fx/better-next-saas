@@ -21,6 +21,7 @@ import { getPreferredLanguage } from "@/modules/i18n/utils";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { env } from "./env";
+import { getTrustedOrigins } from "./server-utils";
 import { isStripeEnabled, stripeClient } from "./stripe";
 
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? "";
@@ -271,9 +272,7 @@ export const auth = betterAuth({
 
 	// Base URL
 	baseURL: env.BETTER_AUTH_URL,
-	trustedOrigins: Array.from(
-		new Set([env.BETTER_AUTH_URL ?? "", env.NEXT_PUBLIC_APP_URL ?? ""]),
-	),
+	trustedOrigins: getTrustedOrigins(),
 });
 
 // Export types for use throughout the application

@@ -1,3 +1,4 @@
+import { baseTranslations } from "@c15t/translations";
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -6,8 +7,14 @@ import { NuqsAdapter } from "nuqs/adapters/next";
 import { routing } from "@/modules/i18n/routing";
 import { TRPCReactProvider } from "@/trpc/client";
 import "@/styles/globals.css";
+import {
+	ConsentManagerDialog,
+	ConsentManagerProvider,
+	CookieBanner,
+} from "@c15t/nextjs";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Body } from "@/components/body";
+import { env } from "@/lib/env";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { ClientProviders } from "./providers";
 
@@ -52,7 +59,23 @@ export default async function LocaleLayout({ children, params }: Props) {
 					<Body>
 						<NextIntlClientProvider>
 							<HydrationBoundary state={dehydrate(queryClient)}>
-								<ClientProviders>{children}</ClientProviders>
+								<ConsentManagerProvider
+									options={{
+										mode: "c15t",
+										backendURL: `${env.NEXT_PUBLIC_API_URL}/api/c15t`,
+										consentCategories: ["necessary", "marketing"], // Optional: Specify which consent categories to show in the banner.
+										ignoreGeoLocation: true, // Useful for development to always view the banner.
+										translations: {
+											translations: baseTranslations,
+											defaultLanguage: locale,
+											disableAutoLanguageSwitch: false,
+										},
+									}}
+								>
+									<CookieBanner />
+									<ConsentManagerDialog />
+									<ClientProviders>{children}</ClientProviders>
+								</ConsentManagerProvider>
 							</HydrationBoundary>
 						</NextIntlClientProvider>
 					</Body>
