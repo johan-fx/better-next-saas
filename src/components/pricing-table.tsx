@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Loader2, Radio } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -12,7 +12,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, formatAmountCents } from "@/lib/utils";
+import { BillingPeriod } from "@/modules/billing/plans";
 import { Link } from "@/modules/i18n/navigation";
 import { useTRPC } from "@/trpc/client";
 import { Badge } from "./ui/badge";
@@ -22,6 +24,7 @@ function PricingTableContent() {
 	const t = useTranslations("billing");
 	const tCommon = useTranslations("common");
 	const trpc = useTRPC();
+	const [period, setPeriod] = useState<BillingPeriod>(BillingPeriod.MONTHLY);
 
 	// Fetch configured plans (Basic, Plus, Pro) with Stripe prices
 	const { data: plans } = useSuspenseQuery(
@@ -56,14 +59,30 @@ function PricingTableContent() {
 					</p>
 				</div>
 
-				<div className="mt-8 grid gap-4 md:mt-20 md:grid-cols-2 lg:grid-cols-4">
+				<div className="mt-8 flex justify-center">
+					<Tabs
+						value={period}
+						onValueChange={(val) => setPeriod(val as BillingPeriod)}
+					>
+						<TabsList>
+							<TabsTrigger value={BillingPeriod.MONTHLY} className="flex-1">
+								{t("monthly")}
+							</TabsTrigger>
+							<TabsTrigger value={BillingPeriod.YEARLY} className="flex-1">
+								{t("yearly")}
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				</div>
+
+				<div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-2 lg:grid-cols-4">
 					{/* Free plan */}
 					<Card className="bg-muted">
 						<CardHeader>
 							<CardTitle className="h-6">{t("plans.free.name")}</CardTitle>
 							<CardDescription className="text-2xl font-semibold flex items-baseline gap-1">
 								{formatAmountCents(0, "USD")}
-								<span className="text-sm">{t(`monthlyPeriod`)}</span>
+								<span className="text-sm">{t(`${period}Period`)}</span>
 							</CardDescription>
 							<Button asChild variant="outline" className="mt-4 w-full">
 								<Link href="/auth/sign-up">{tCommon("getStarted")}</Link>
@@ -94,9 +113,9 @@ function PricingTableContent() {
 							| Record<string, string>
 							| undefined;
 						const features = featuresRaw ? Object.values(featuresRaw) : [];
-						const unitAmount = plan.prices?.monthly?.unitAmount ?? 0;
+						const unitAmount = plan.prices?.[period]?.unitAmount ?? 0;
 						const currency = (
-							plan.prices?.monthly?.currency ?? "USD"
+							plan.prices?.[period]?.currency ?? "USD"
 						).toUpperCase();
 
 						return (
@@ -115,7 +134,7 @@ function PricingTableContent() {
 									</CardTitle>
 									<CardDescription className="text-2xl font-semibold flex items-baseline gap-1">
 										{formatAmountCents(unitAmount, currency)}
-										<span className="text-sm">{t(`monthlyPeriod`)}</span>
+										<span className="text-sm">{t(`${period}Period`)}</span>
 									</CardDescription>
 									<Button asChild className="mt-4 w-full">
 										<Link href="/auth/sign-up">{tCommon("getStarted")}</Link>
