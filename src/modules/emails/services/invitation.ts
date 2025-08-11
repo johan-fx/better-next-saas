@@ -43,7 +43,7 @@ export async function sendInvitationEmail({
 		// Get the translated subject
 		const subject = t("subject", {
 			organizationName,
-			appName: env.APP_NAME,
+			appName: env.NEXT_PUBLIC_APP_NAME,
 		});
 
 		// Render the email template to HTML
@@ -54,7 +54,7 @@ export async function sendInvitationEmail({
 				inviterEmail,
 				role,
 				inviteLink,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				logoUrl: env.APP_LOGO_URL,
 			}),
 		);

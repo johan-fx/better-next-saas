@@ -7,7 +7,7 @@ import { env } from "./env";
 import { getTrustedOrigins } from "./server-utils";
 
 export const instance = c15tInstance({
-	appName: env.APP_NAME,
+	appName: env.NEXT_PUBLIC_APP_NAME,
 	basePath: "/api/c15t",
 	database: drizzleAdapter(dbPg as DB, {
 		provider: "pg",

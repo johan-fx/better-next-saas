@@ -43,12 +43,12 @@ export async function sendSubscriptionCancellationEmail({
 		);
 
 		const translations = {
-			subject: t("subject", { appName: env.APP_NAME }),
+			subject: t("subject", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			title: t("title"),
 			greeting: t("greeting", { userName }),
 			cancellationMessage: t("cancellationMessage", {
 				planName,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				effectiveDate,
 			}),
 			details: t("details"),
@@ -59,10 +59,10 @@ export async function sendSubscriptionCancellationEmail({
 			accountDetails: t("accountDetails"),
 			email: t("email"),
 			cancellationRequested: t("cancellationRequested"),
-			footer: t("footer", { appName: env.APP_NAME }),
+			footer: t("footer", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			copyright: t("copyright", {
 				year: new Date().getFullYear(),
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 			}),
 		};
 
@@ -76,7 +76,7 @@ export async function sendSubscriptionCancellationEmail({
 				effectiveDate,
 				cancellationReason: cancellationReason || undefined,
 				locale: validLocale,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				logoUrl: env.APP_LOGO_URL,
 				translations,
 			}),

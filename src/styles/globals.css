@@ -175,3 +175,16 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+/* Enable smooth scrolling for in-page anchors with reduced-motion respect */
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
+}

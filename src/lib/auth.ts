@@ -259,7 +259,7 @@ export const auth = betterAuth({
 	// Advanced configuration
 	advanced: {
 		useSecureCookies: env.NODE_ENV === "production",
-		cookiePrefix: slugify(env.APP_NAME),
+		cookiePrefix: slugify(env.NEXT_PUBLIC_APP_NAME),
 	},
 
 	rateLimit: {
