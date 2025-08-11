@@ -34,6 +34,7 @@ export type Plan = {
 			interval: string;
 		};
 	};
+	recommended?: boolean;
 };
 
 export enum BillingPeriod {
@@ -62,6 +63,7 @@ export const plans: Plan[] = [
 			seats: 3,
 			monthlyCredits: 3000,
 		},
+		recommended: true,
 	},
 	{
 		id: 3,

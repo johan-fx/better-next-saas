@@ -19,7 +19,8 @@
     "lightTheme": "Claro",
     "systemTheme": "Sistema",
     "darkTheme": "Oscuro",
-    "and": "y"
+    "and": "y",
+    "recommended": "Recomendado"
   },
   "navigation": {
     "home": "Inicio",

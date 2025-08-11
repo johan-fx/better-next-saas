@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
 import { Link } from "@/modules/i18n/navigation";
 
 const menuItems = [
-	{ name: "Features", href: "#features" },
-	{ name: "Solution", href: "#solution" },
-	{ name: "Pricing", href: "#pricing" },
+	{ name: "Features", href: "/#features" },
+	{ name: "Solution", href: "/#solution" },
+	{ name: "Pricing", href: "/pricing" },
 ];
 
 export const HeroHeader = () => {

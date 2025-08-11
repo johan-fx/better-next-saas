@@ -1,7 +1,7 @@
 "use client";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Loader, Loader2, Radio } from "lucide-react";
+import { Loader2, Radio } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,17 @@ import { useTRPC } from "@/trpc/client";
 // Separated content that uses Suspense hooks to keep the parent simple
 function PricingContent() {
 	const t = useTranslations("billing");
+	const tCommon = useTranslations("common");
 	const trpc = useTRPC();
+
+	const paidPlanName = "basic";
 
 	// Fetch live plans (Plus/Pro/Basic) with Stripe prices
 	const { data: plans } = useSuspenseQuery(
 		trpc.billing.getPlans.queryOptions(),
 	);
 
-	const plusPlan = plans.find((p) => p.name?.toLowerCase() === "plus");
+	const plusPlan = plans.find((p) => p.name?.toLowerCase() === paidPlanName);
 	const plusMonthly = plusPlan?.prices?.monthly;
 	const plusPriceText = formatAmountCents(
 		plusMonthly?.unitAmount ?? 0,
@@ -31,7 +34,7 @@ function PricingContent() {
 		(t.raw("plans.free.features") ?? {}) as Record<string, string>,
 	);
 	const plusFeatures = Object.values(
-		(t.raw("plans.plus.features") ?? {}) as Record<string, string>,
+		(t.raw(`plans.${paidPlanName}.features`) ?? {}) as Record<string, string>,
 	);
 
 	return (
@@ -61,7 +64,7 @@ function PricingContent() {
 							</div>
 
 							<Button asChild variant="outline" className="w-full">
-								<Link href="/auth/sign-up">Get Started</Link>
+								<Link href="/auth/sign-up">{tCommon("getStarted")}</Link>
 							</Button>
 
 							<hr className="border-dashed" />
@@ -88,14 +91,16 @@ function PricingContent() {
 							<div className="space-y-4">
 								<div>
 									{/* Use translations from billing.plans.plus */}
-									<h2 className="font-medium">{t("plans.plus.name")}</h2>
+									<h2 className="font-medium">
+										{t(`plans.${paidPlanName}.name`)}
+									</h2>
 									<span className="my-3 block text-2xl font-semibold">
 										{plusPriceText} {t("monthlyPeriod")}
 									</span>
 								</div>
 
 								<Button asChild className="w-full">
-									<Link href="/auth/sign-up">Get Started</Link>
+									<Link href="/auth/sign-up">{tCommon("getStarted")}</Link>
 								</Button>
 							</div>
 

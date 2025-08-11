@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "@/modules/i18n/navigation";
 import { LanguageSwitcher } from "@/modules/i18n/ui/components/language-switcher";
 import ThemeSwitcher from "./theme-switcher";
 
@@ -20,48 +20,7 @@ const links = [
 			},
 			{
 				title: "Pricing",
-				href: "#",
-			},
-			{
-				title: "Help",
-				href: "#",
-			},
-			{
-				title: "About",
-				href: "#",
-			},
-		],
-	},
-	{
-		group: "Solution",
-		items: [
-			{
-				title: "Startup",
-				href: "#",
-			},
-			{
-				title: "Freelancers",
-				href: "#",
-			},
-			{
-				title: "Organizations",
-				href: "#",
-			},
-			{
-				title: "Students",
-				href: "#",
-			},
-			{
-				title: "Collaboration",
-				href: "#",
-			},
-			{
-				title: "Design",
-				href: "#",
-			},
-			{
-				title: "Management",
-				href: "#",
+				href: "/pricing",
 			},
 		],
 	},
@@ -73,19 +32,11 @@ const links = [
 				href: "#",
 			},
 			{
-				title: "Careers",
-				href: "#",
-			},
-			{
 				title: "Blog",
 				href: "#",
 			},
 			{
 				title: "Contact",
-				href: "#",
-			},
-			{
-				title: "Help",
 				href: "#",
 			},
 		],
