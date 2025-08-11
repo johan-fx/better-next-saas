@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitcher } from "@/modules/i18n/ui/components/language-switcher";
+import ThemeSwitcher from "./theme-switcher";
 
 const links = [
 	{
@@ -15,10 +16,6 @@ const links = [
 			},
 			{
 				title: "Solution",
-				href: "#",
-			},
-			{
-				title: "Customers",
 				href: "#",
 			},
 			{
@@ -84,10 +81,6 @@ const links = [
 				href: "#",
 			},
 			{
-				title: "Press",
-				href: "#",
-			},
-			{
 				title: "Contact",
 				href: "#",
 			},
@@ -101,20 +94,12 @@ const links = [
 		group: "Legal",
 		items: [
 			{
-				title: "Licence",
-				href: "#",
-			},
-			{
 				title: "Privacy",
-				href: "#",
+				href: "/legal/privacy",
 			},
 			{
 				title: "Cookies",
-				href: "#",
-			},
-			{
-				title: "Security",
-				href: "#",
+				href: "/legal/cookies",
 			},
 		],
 	},
@@ -174,7 +159,10 @@ export default function FooterSection() {
 						© {new Date().getFullYear()} {process.env.NEXT_PUBLIC_APP_NAME}, All
 						rights reserved
 					</small>
-					<LanguageSwitcher />
+					<div className="flex items-center space-x-2">
+						<LanguageSwitcher />
+						<ThemeSwitcher />
+					</div>
 				</div>
 			</div>
 		</footer>
