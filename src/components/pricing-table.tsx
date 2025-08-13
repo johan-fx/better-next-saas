@@ -136,8 +136,13 @@ function PricingTableContent() {
 										{formatAmountCents(unitAmount, currency)}
 										<span className="text-sm">{t(`${period}Period`)}</span>
 									</CardDescription>
+									{/* When user starts from a paid plan, carry plan and period through sign-up */}
 									<Button asChild className="mt-4 w-full">
-										<Link href="/auth/sign-up">{tCommon("getStarted")}</Link>
+										<Link
+											href={`/auth/sign-up?plan=${(plan.name || "").toLowerCase()}&period=${period}`}
+										>
+											{tCommon("getStarted")}
+										</Link>
 									</Button>
 								</CardHeader>
 								<Separator />

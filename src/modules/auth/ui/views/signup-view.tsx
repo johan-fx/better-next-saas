@@ -1,7 +1,9 @@
 "use client";
 
 import { AuthCard } from "@daveyplate/better-auth-ui";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { IsoLogo } from "@/components/isologo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@/modules/i18n/navigation";
@@ -9,6 +11,23 @@ import { Link } from "@/modules/i18n/navigation";
 export const SignUpView = () => {
 	const t = useTranslations("authUI");
 	const tCommon = useTranslations("common");
+	const searchParams = useSearchParams();
+
+	// Persist selected plan/period from pricing CTAs to complete upgrade post-signup
+	useEffect(() => {
+		const plan = searchParams.get("plan");
+		const period = searchParams.get("period");
+		if (plan && period) {
+			try {
+				localStorage.setItem(
+					"postSignupUpgrade",
+					JSON.stringify({ plan, period }),
+				);
+			} catch {
+				// noop
+			}
+		}
+	}, [searchParams]);
 
 	return (
 		<div className="flex flex-col gap-6">
