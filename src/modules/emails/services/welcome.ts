@@ -36,17 +36,19 @@ export async function sendWelcomeEmail({
 
 		// Prepare translations object
 		const translations = {
-			subject: t("subject", { appName: env.APP_NAME }),
-			title: t("title", { appName: env.APP_NAME }),
+			subject: t("subject", { appName: env.NEXT_PUBLIC_APP_NAME }),
+			title: t("title", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			greeting: t("greeting", { userName }),
-			congratulations: t("congratulations", { appName: env.APP_NAME }),
+			congratulations: t("congratulations", {
+				appName: env.NEXT_PUBLIC_APP_NAME,
+			}),
 			getStarted: t("getStarted"),
 			nextSteps: t("nextSteps"),
 			step1: t("step1"),
 			step2: t("step2"),
 			step3: t("step3"),
 			step4: t("step4"),
-			features: t("features", { appName: env.APP_NAME }),
+			features: t("features", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			feature1Title: t("feature1Title"),
 			feature1Description: t("feature1Description"),
 			feature2Title: t("feature2Title"),
@@ -58,10 +60,10 @@ export async function sendWelcomeEmail({
 			support: t("support"),
 			accountDetails: t("accountDetails"),
 			accountCreated: t("accountCreated"),
-			footer: t("footer", { appName: env.APP_NAME }),
+			footer: t("footer", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			copyright: t("copyright", {
 				year: new Date().getFullYear(),
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 			}),
 		};
 
@@ -72,7 +74,7 @@ export async function sendWelcomeEmail({
 				userName,
 				dashboardUrl,
 				locale: validLocale,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				logoUrl: env.APP_LOGO_URL,
 				translations,
 			}),

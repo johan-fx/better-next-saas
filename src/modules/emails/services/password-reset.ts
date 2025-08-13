@@ -36,7 +36,7 @@ export async function sendPasswordResetEmail({
 		const t = await getLocaleTranslations(validLocale, "Email.passwordReset");
 
 		// Get the translated subject
-		const subject = t("subject", { appName: env.APP_NAME });
+		const subject = t("subject", { appName: env.NEXT_PUBLIC_APP_NAME });
 
 		// For now, use the verification template for password reset
 		// You can create a dedicated password reset template later
@@ -45,7 +45,7 @@ export async function sendPasswordResetEmail({
 				userEmail: to,
 				userName: userName || "there",
 				verificationUrl: resetUrl,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				logoUrl: env.APP_LOGO_URL,
 				expirationHours: EMAIL_CONFIG.templates.passwordReset.expirationHours,
 			}),

@@ -24,7 +24,7 @@ export async function authMiddleware(
 
 	// Check cookie for optimistic redirects for protected routes
 	const sessionCookie = getSessionCookie(request, {
-		cookiePrefix: slugify(process.env.APP_NAME ?? "my-app"),
+		cookiePrefix: slugify(process.env.NEXT_PUBLIC_APP_NAME ?? "my-app"),
 	});
 
 	if (!sessionCookie) {

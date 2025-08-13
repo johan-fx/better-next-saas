@@ -44,12 +44,12 @@ export async function sendSubscriptionUpgradeEmail({
 
 		// Prepare translations object
 		const translations = {
-			subject: t("subject", { appName: env.APP_NAME }),
+			subject: t("subject", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			title: t("title"),
 			greeting: t("greeting", { userName }),
 			confirmation: t("confirmation", {
 				planName,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 			}),
 			subscriptionDetails: t("subscriptionDetails"),
 			plan: t("plan"),
@@ -75,10 +75,10 @@ export async function sendSubscriptionUpgradeEmail({
 			accountDetails: t("accountDetails"),
 			email: t("email"),
 			subscriptionDate: t("subscriptionDate"),
-			footer: t("footer", { appName: env.APP_NAME }),
+			footer: t("footer", { appName: env.NEXT_PUBLIC_APP_NAME }),
 			copyright: t("copyright", {
 				year: new Date().getFullYear(),
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 			}),
 		};
 
@@ -93,7 +93,7 @@ export async function sendSubscriptionUpgradeEmail({
 				billingCycle,
 				nextBillingDate,
 				locale: validLocale,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				logoUrl: env.APP_LOGO_URL,
 				translations,
 			}),

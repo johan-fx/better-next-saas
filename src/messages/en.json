@@ -19,7 +19,8 @@
     "lightTheme": "Light",
     "systemTheme": "System",
     "darkTheme": "Dark",
-    "and": "and"
+    "and": "and",
+    "recommended": "Recommended"
   },
   "navigation": {
     "home": "Home",
@@ -706,10 +707,9 @@
       "free": {
         "name": "Free plan",
         "features": {
-          "1": "2 GB of cloud storage",
-          "2": "Locally stored files",
-          "3": "1 individual user",
-          "4": "1 devices synced"
+          "1": "Locally stored files",
+          "2": "1 individual user",
+          "3": "1 devices synced"
         },
         "cta": "Downgrade"
       },
@@ -761,6 +761,177 @@
       "empty": {
         "title": "No invoices yet",
         "description": "Your invoices will appear here once you have billing activity."
+      }
+    }
+  },
+  "legal": {
+    "cookies": {
+      "title": "Cookies Policy",
+      "intro": "We use cookies to operate this Service and, with your consent, to measure usage and personalize content in compliance with EU GDPR/ePrivacy rules.",
+      "meta": {
+        "lastUpdated": "Last updated",
+        "effective": "Effective immediately"
+      },
+      "actions": {
+        "manage": "Manage cookies",
+        "openSettings": "Open privacy settings",
+        "reopenBanner": "Reopen cookie banner"
+      },
+      "sections": {
+        "whatAreCookies": {
+          "title": "What are cookies?",
+          "p1": "Cookies are small text files that a website stores on your device. They help the site remember information about your visit and enable core functionality. Similar technologies like local storage and pixels may also be used."
+        },
+        "howWeUse": {
+          "title": "How we use cookies",
+          "bullets": [
+            "Provide core functionality and keep you signed in",
+            "Remember your settings and preferences",
+            "Measure usage to improve the Service",
+            "Personalize content and, where applicable, marketing"
+          ]
+        },
+        "types": {
+          "title": "Types of cookies we use",
+          "items": [
+            {
+              "name": "Strictly necessary",
+              "desc": "Required to deliver the Service; cannot be switched off.",
+              "badge": "Required"
+            },
+            {
+              "name": "Analytics",
+              "desc": "Help us understand usage and improve our product.",
+              "badge": "Optional"
+            },
+            {
+              "name": "Marketing",
+              "desc": "Used to deliver and measure advertising.",
+              "badge": "Optional"
+            }
+          ]
+        },
+        "manage": {
+          "title": "Manage your preferences",
+          "p1": "You can update your cookie preferences at any time.",
+          "p2": "Use the button below to open the privacy settings.",
+          "note": "Note: essential cookies will remain enabled."
+        },
+        "thirdParties": {
+          "title": "Third-party cookies",
+          "p1": "Some cookies are set by third parties. Their processing is subject to their own privacy policies and terms."
+        },
+        "retention": {
+          "title": "Retention",
+          "p1": "Cookies have different lifetimes. Session cookies expire when you close your browser; persistent cookies remain until their set expiry or you delete them."
+        },
+        "contact": {
+          "title": "Contact",
+          "p1": "If you have questions about this policy or your choices, contact us at {email}."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This Privacy Policy explains how {appName} collects, uses, and protects your personal data in accordance with the EU General Data Protection Regulation (GDPR).",
+      "meta": {
+        "lastUpdated": "Last updated",
+        "effective": "Effective immediately"
+      },
+      "sections": {
+        "controller": {
+          "title": "Data Controller",
+          "p1": "The data controller responsible for your personal data is {appName}.",
+          "p2": "If you have questions about this policy or your rights, contact us at {email}."
+        },
+        "data": {
+          "title": "Personal Data We Collect",
+          "intro": "We may collect the following categories of personal data when you use our Service:",
+          "items": [
+            "Account information (name, email, password hash)",
+            "Organization and billing details (company name, billing address)",
+            "Payment information processed by our payment provider (we do not store full card details)",
+            "Usage data and product telemetry (features used, interactions, performance)",
+            "Device and log data (IP address, browser type, pages visited, timestamps)",
+            "Support communications and feedback"
+          ]
+        },
+        "purposes": {
+          "title": "How We Use Your Data",
+          "intro": "We process your personal data for the following purposes:",
+          "items": [
+            "To provide and operate the Service",
+            "To authenticate and secure accounts",
+            "To process payments and manage subscriptions",
+            "To provide support and respond to requests",
+            "To improve the Service and develop new features",
+            "To comply with legal obligations"
+          ]
+        },
+        "legalBases": {
+          "title": "Legal Bases for Processing",
+          "intro": "We rely on the following legal bases, as applicable:",
+          "items": [
+            "Performance of a contract (providing the Service to you)",
+            "Legitimate interests (for security, product improvement, and fraud prevention)",
+            "Consent (for optional cookies/analytics, where required)",
+            "Compliance with legal obligations"
+          ]
+        },
+        "sharing": {
+          "title": "Sharing Your Data",
+          "p1": "We do not sell your personal data.",
+          "p2": "We may share your data with trusted service providers who process data on our behalf, subject to appropriate safeguards:",
+          "items": [
+            "Cloud hosting and infrastructure providers",
+            "Payment processors",
+            "Analytics and monitoring tools",
+            "Email delivery services",
+            "Customer support tools"
+          ]
+        },
+        "transfers": {
+          "title": "International Data Transfers",
+          "p1": "If we transfer personal data outside the European Economic Area, we implement appropriate safeguards such as Standard Contractual Clauses to ensure an adequate level of protection."
+        },
+        "retention": {
+          "title": "Data Retention",
+          "p1": "We retain personal data only as long as necessary for the purposes described above, to comply with our legal obligations, resolve disputes, and enforce agreements. After this period, data is deleted or anonymized."
+        },
+        "rights": {
+          "title": "Your Rights (EEA/UK)",
+          "intro": "Subject to applicable law, you have the following rights:",
+          "items": [
+            "Access your personal data",
+            "Request correction (rectification)",
+            "Request deletion (erasure)",
+            "Restrict or object to processing",
+            "Data portability",
+            "Withdraw consent (where processing is based on consent)",
+            "Lodge a complaint with a supervisory authority"
+          ],
+          "outro": "To exercise your rights, please contact us using the details in the Contact section."
+        },
+        "cookies": {
+          "title": "Cookies and Tracking",
+          "p1": "We use essential cookies to operate the Service and, where permitted, analytics cookies to understand usage and improve our product. You can manage cookies through your browser settings."
+        },
+        "security": {
+          "title": "Security",
+          "p1": "We implement technical and organizational measures designed to protect your personal data. However, no method of transmission or storage is completely secure."
+        },
+        "children": {
+          "title": "Children's Privacy",
+          "p1": "Our Service is not directed to children under 16 and we do not knowingly collect personal data from them."
+        },
+        "changes": {
+          "title": "Changes to This Policy",
+          "p1": "We may update this Privacy Policy from time to time. We will post the updated version on this page and indicate the effective date."
+        },
+        "contact": {
+          "title": "Contact",
+          "p1": "If you have questions or requests regarding this Privacy Policy, contact us at {email}."
+        }
       }
     }
   }

@@ -19,7 +19,8 @@
     "lightTheme": "Claro",
     "systemTheme": "Sistema",
     "darkTheme": "Oscuro",
-    "and": "y"
+    "and": "y",
+    "recommended": "Recomendado"
   },
   "navigation": {
     "home": "Inicio",
@@ -706,10 +707,9 @@
       "free": {
         "name": "Plan gratis",
         "features": {
-          "1": "2 GB de almacenamiento en la nube",
-          "2": "Archivos almacenados localmente",
-          "3": "1 usuario individual",
-          "4": "1 dispositivo sincronizado"
+          "1": "Archivos almacenados localmente",
+          "2": "1 usuario individual",
+          "3": "1 dispositivo sincronizado"
         },
         "cta": "Degradar"
       },
@@ -761,6 +761,177 @@
       "empty": {
         "title": "Aún no hay facturas",
         "description": "Tus facturas aparecerán aquí una vez que tengas actividad de facturación."
+      }
+    }
+  },
+  "legal": {
+    "cookies": {
+      "title": "Política de Cookies",
+      "intro": "Utilizamos cookies para operar este Servicio y, con tu consentimiento, para medir el uso y personalizar el contenido en cumplimiento con el RGPD/ePrivacy de la UE.",
+      "meta": {
+        "lastUpdated": "Última actualización",
+        "effective": "Efectiva de inmediato"
+      },
+      "actions": {
+        "manage": "Gestionar cookies",
+        "openSettings": "Abrir preferencias de privacidad",
+        "reopenBanner": "Reabrir banner de cookies"
+      },
+      "sections": {
+        "whatAreCookies": {
+          "title": "¿Qué son las cookies?",
+          "p1": "Las cookies son pequeños archivos de texto que un sitio web almacena en tu dispositivo. Ayudan al sitio a recordar información sobre tu visita y habilitan funcionalidades esenciales. También podemos utilizar tecnologías similares como almacenamiento local y píxeles."
+        },
+        "howWeUse": {
+          "title": "Cómo utilizamos las cookies",
+          "bullets": [
+            "Proporcionar funcionalidad esencial y mantener tu sesión iniciada",
+            "Recordar tu configuración y preferencias",
+            "Medir el uso para mejorar el Servicio",
+            "Personalizar contenido y, cuando corresponda, marketing"
+          ]
+        },
+        "types": {
+          "title": "Tipos de cookies que usamos",
+          "items": [
+            {
+              "name": "Estrictamente necesarias",
+              "desc": "Requeridas para ofrecer el Servicio; no se pueden desactivar.",
+              "badge": "Requeridas"
+            },
+            {
+              "name": "Analítica",
+              "desc": "Nos ayudan a entender el uso y a mejorar nuestro producto.",
+              "badge": "Opcional"
+            },
+            {
+              "name": "Marketing",
+              "desc": "Se usan para entregar y medir publicidad.",
+              "badge": "Opcional"
+            }
+          ]
+        },
+        "manage": {
+          "title": "Gestiona tus preferencias",
+          "p1": "Puedes actualizar tus preferencias de cookies en cualquier momento.",
+          "p2": "Usa el botón de abajo para abrir las preferencias de privacidad.",
+          "note": "Nota: las cookies esenciales permanecerán habilitadas."
+        },
+        "thirdParties": {
+          "title": "Cookies de terceros",
+          "p1": "Algunas cookies son establecidas por terceros. Su tratamiento está sujeto a sus propias políticas de privacidad y términos."
+        },
+        "retention": {
+          "title": "Conservación",
+          "p1": "Las cookies tienen diferentes duraciones. Las cookies de sesión expiran al cerrar el navegador; las persistentes permanecen hasta su fecha de caducidad o hasta que las elimines."
+        },
+        "contact": {
+          "title": "Contacto",
+          "p1": "Si tienes preguntas sobre esta política o tus opciones, contáctanos en {email}."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "intro": "Esta Política de Privacidad explica cómo {appName} recopila, utiliza y protege tus datos personales de acuerdo con el Reglamento General de Protección de Datos (RGPD) de la Unión Europea.",
+      "meta": {
+        "lastUpdated": "Última actualización",
+        "effective": "Efectiva de inmediato"
+      },
+      "sections": {
+        "controller": {
+          "title": "Responsable del Tratamiento",
+          "p1": "El responsable del tratamiento de tus datos personales es {appName}.",
+          "p2": "Si tienes preguntas sobre esta política o tus derechos, contáctanos en {email}."
+        },
+        "data": {
+          "title": "Datos Personales que Recopilamos",
+          "intro": "Podemos recopilar las siguientes categorías de datos personales cuando usas nuestro Servicio:",
+          "items": [
+            "Información de la cuenta (nombre, correo electrónico, hash de contraseña)",
+            "Detalles de organización y facturación (nombre de la empresa, dirección de facturación)",
+            "Información de pago procesada por nuestro proveedor de pagos (no almacenamos los datos completos de la tarjeta)",
+            "Datos de uso y telemetría del producto (funciones utilizadas, interacciones, rendimiento)",
+            "Datos del dispositivo y registros (dirección IP, tipo de navegador, páginas visitadas, marcas de tiempo)",
+            "Comunicaciones de soporte y comentarios"
+          ]
+        },
+        "purposes": {
+          "title": "Cómo Usamos tus Datos",
+          "intro": "Tratamos tus datos personales para los siguientes fines:",
+          "items": [
+            "Proporcionar y operar el Servicio",
+            "Autenticar y proteger las cuentas",
+            "Procesar pagos y gestionar suscripciones",
+            "Brindar soporte y responder a solicitudes",
+            "Mejorar el Servicio y desarrollar nuevas funciones",
+            "Cumplir con obligaciones legales"
+          ]
+        },
+        "legalBases": {
+          "title": "Bases Legales del Tratamiento",
+          "intro": "Nos basamos en las siguientes bases legales, según corresponda:",
+          "items": [
+            "Ejecución de un contrato (proporcionar el Servicio)",
+            "Intereses legítimos (seguridad, mejora del producto y prevención de fraude)",
+            "Consentimiento (para cookies/analítica opcionales, cuando sea necesario)",
+            "Cumplimiento de obligaciones legales"
+          ]
+        },
+        "sharing": {
+          "title": "Compartición de tus Datos",
+          "p1": "No vendemos tus datos personales.",
+          "p2": "Podemos compartir tus datos con proveedores de servicios de confianza que tratan datos en nuestro nombre, con las garantías adecuadas:",
+          "items": [
+            "Proveedores de alojamiento e infraestructura en la nube",
+            "Procesadores de pago",
+            "Herramientas de analítica y monitoreo",
+            "Servicios de envío de correo electrónico",
+            "Herramientas de soporte al cliente"
+          ]
+        },
+        "transfers": {
+          "title": "Transferencias Internacionales de Datos",
+          "p1": "Si transferimos datos personales fuera del Espacio Económico Europeo, implementamos salvaguardas adecuadas como las Cláusulas Contractuales Tipo para garantizar un nivel adecuado de protección."
+        },
+        "retention": {
+          "title": "Conservación de Datos",
+          "p1": "Conservamos los datos personales solo durante el tiempo necesario para los fines descritos anteriormente, para cumplir con nuestras obligaciones legales, resolver disputas y hacer cumplir los acuerdos. Después de este período, los datos se eliminan o se anonimizan."
+        },
+        "rights": {
+          "title": "Tus Derechos (EEE/Reino Unido)",
+          "intro": "Sujeto a la legislación aplicable, tienes los siguientes derechos:",
+          "items": [
+            "Acceder a tus datos personales",
+            "Solicitar corrección (rectificación)",
+            "Solicitar eliminación (supresión)",
+            "Restringir u oponerte al tratamiento",
+            "Portabilidad de los datos",
+            "Retirar el consentimiento (cuando el tratamiento se base en el consentimiento)",
+            "Presentar una reclamación ante una autoridad de control"
+          ],
+          "outro": "Para ejercer tus derechos, contáctanos usando los datos de la sección de Contacto."
+        },
+        "cookies": {
+          "title": "Cookies y Seguimiento",
+          "p1": "Usamos cookies esenciales para operar el Servicio y, cuando esté permitido, cookies de analítica para comprender el uso y mejorar nuestro producto. Puedes gestionar las cookies desde la configuración de tu navegador."
+        },
+        "security": {
+          "title": "Seguridad",
+          "p1": "Implementamos medidas técnicas y organizativas diseñadas para proteger tus datos personales. Sin embargo, ningún método de transmisión o almacenamiento es completamente seguro."
+        },
+        "children": {
+          "title": "Privacidad de los Menores",
+          "p1": "Nuestro Servicio no está dirigido a menores de 16 años y no recopilamos deliberadamente datos personales de ellos."
+        },
+        "changes": {
+          "title": "Cambios en esta Política",
+          "p1": "Podemos actualizar esta Política de Privacidad periódicamente. Publicaremos la versión actualizada en esta página e indicaremos la fecha de vigencia."
+        },
+        "contact": {
+          "title": "Contacto",
+          "p1": "Si tienes preguntas o solicitudes relacionadas con esta Política de Privacidad, contáctanos en {email}."
+        }
       }
     }
   }

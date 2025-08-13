@@ -14,22 +14,10 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { cn, formatAmountCents } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { BillingPeriod, type Plan } from "../../plans";
 import { UpgradeSubscriptionButton } from "../components/upgrade-subscription-button";
-
-function formatAmountCents(amount: number, currency: string) {
-	try {
-		return new Intl.NumberFormat(undefined, {
-			style: "currency",
-			currency,
-			currencyDisplay: "narrowSymbol",
-		}).format((amount ?? 0) / 100);
-	} catch {
-		return `$${(amount / 100).toFixed(2)}`;
-	}
-}
 
 export const PlansCards = ({
 	period = BillingPeriod.MONTHLY,

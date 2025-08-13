@@ -12,7 +12,7 @@ import { z } from "zod";
 const envSchema = z
 	.object({
 		// App Configuration
-		APP_NAME: z.string().optional().default("My App"),
+		NEXT_PUBLIC_APP_NAME: z.string().optional().default("My App"),
 		APP_LOGO_URL: z.string().url("Invalid logo URL").optional(),
 		APP_SUPPORT_EMAIL: z
 			.string()
@@ -87,7 +87,7 @@ const envSchema = z
  */
 export const env = envSchema.parse({
 	// App Configuration
-	APP_NAME: process.env.APP_NAME,
+	NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
 	APP_LOGO_URL: process.env.APP_LOGO_URL,
 	APP_SUPPORT_EMAIL: process.env.APP_SUPPORT_EMAIL,
 	APP_DEFAULT_LOCALE: process.env.APP_DEFAULT_LOCALE,

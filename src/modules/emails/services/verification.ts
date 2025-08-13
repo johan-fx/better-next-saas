@@ -32,7 +32,7 @@ export async function sendVerificationEmail({
 		const t = await getLocaleTranslations(validLocale, "Email.verification");
 
 		// Get the translated subject
-		const subject = t("subject", { appName: env.APP_NAME });
+		const subject = t("subject", { appName: env.NEXT_PUBLIC_APP_NAME });
 
 		// Render the email template to HTML
 		const emailHtml = await render(
@@ -40,7 +40,7 @@ export async function sendVerificationEmail({
 				userEmail: to,
 				userName: userName || "there",
 				verificationUrl,
-				appName: env.APP_NAME,
+				appName: env.NEXT_PUBLIC_APP_NAME,
 				logoUrl: env.APP_LOGO_URL,
 				expirationHours: EMAIL_CONFIG.templates.verification.expirationHours,
 			}),

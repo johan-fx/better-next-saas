@@ -19,6 +19,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { formatAmountCents } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
 type InvoiceRow = {
@@ -32,18 +33,6 @@ type InvoiceRow = {
 	hostedUrl?: string;
 	status?: string | null;
 };
-
-function formatAmountCents(amount: number, currency: string) {
-	try {
-		return new Intl.NumberFormat(undefined, {
-			style: "currency",
-			currency,
-			currencyDisplay: "narrowSymbol",
-		}).format((amount ?? 0) / 100);
-	} catch {
-		return `$${(amount / 100).toFixed(2)}`;
-	}
-}
 
 export const InvoicesTable = () => {
 	const trpc = useTRPC();
