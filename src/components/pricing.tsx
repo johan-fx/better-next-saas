@@ -100,7 +100,11 @@ function PricingContent() {
 								</div>
 
 								<Button asChild className="w-full">
-									<Link href="/auth/sign-up">{tCommon("getStarted")}</Link>
+									<Link
+										href={`/auth/sign-up?plan=${paidPlanName}&period=monthly`}
+									>
+										{tCommon("getStarted")}
+									</Link>
 								</Button>
 							</div>
 

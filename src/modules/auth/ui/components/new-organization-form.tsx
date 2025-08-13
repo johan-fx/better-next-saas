@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { BillingPeriod } from "@/modules/billing/plans";
 import { useRouter } from "@/modules/i18n/navigation";
 
 enum SlugStatus {
@@ -169,6 +170,47 @@ export const NewOrganizationForm = () => {
 				await authClient.organization.setActive({
 					organizationId: organization.data.id,
 				});
+
+				// If user started from a paid plan, initiate Stripe upgrade now
+				try {
+					const raw = localStorage.getItem("postSignupUpgrade");
+					if (raw) {
+						const parsed = JSON.parse(raw) as {
+							plan?: string;
+							period?: string;
+						};
+						const selectedPlan = (parsed.plan || "").toLowerCase();
+						const annual = parsed.period === BillingPeriod.YEARLY;
+						if (selectedPlan && organization.data?.id) {
+							const { data: upgradeData, error: upgradeError } =
+								await authClient.subscription.upgrade({
+									plan: selectedPlan,
+									successUrl: "/account/billing",
+									cancelUrl: "/account/billing",
+									returnUrl: "/account/billing",
+									referenceId: organization.data.id,
+									annual,
+								});
+
+							// Clear the flag regardless of success to avoid repeated attempts
+							localStorage.removeItem("postSignupUpgrade");
+
+							if (upgradeError) {
+								// Fallback to account page if upgrade failed
+								startTransition(() => {
+									router.replace("/account");
+								});
+								return;
+							}
+							if (upgradeData?.url) {
+								window.location.href = upgradeData.url as string;
+								return;
+							}
+						}
+					}
+				} catch {
+					// Swallow and fallback to account
+				}
 
 				startTransition(() => {
 					router.replace("/account");
