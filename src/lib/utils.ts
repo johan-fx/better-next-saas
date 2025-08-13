@@ -14,6 +14,6 @@ export function formatAmountCents(amount: number, currency: string) {
 			currencyDisplay: "narrowSymbol",
 		}).format((amount ?? 0) / 100);
 	} catch {
-		return `$${(amount / 100).toFixed(2)}`;
+		return `$${((amount ?? 0) / 100).toFixed(2)}`;
 	}
 }
