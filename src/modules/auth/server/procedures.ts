@@ -1,5 +1,11 @@
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import {
+	baseProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+} from "@/trpc/init";
 
 export const authRouter = createTRPCRouter({
 	socialProviders: baseProcedure.query(async () => {
@@ -14,5 +20,16 @@ export const authRouter = createTRPCRouter({
 		}
 
 		return providers;
+	}),
+	verifyApiKey: baseProcedure.query(async () => {
+		return auth.api.getSession({
+			headers: await headers(),
+		});
+	}),
+	organizations: protectedProcedure.query(async () => {
+		const data = await auth.api.listOrganizations({
+			headers: await headers(),
+		});
+		return data;
 	}),
 });

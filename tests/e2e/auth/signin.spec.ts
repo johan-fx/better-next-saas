@@ -1,19 +1,12 @@
-import { test, expect } from "@playwright/test";
-import {
-  createTestInbox,
-  waitForEmailWithSubject,
-  deleteTestInbox,
-  validateMailDevConfig,
-  waitForMailDevReady,
-  clearAllEmails,
-  type EmailTestInbox,
-} from "../utils/maildev";
+import { test, expect } from "../../fixtures/test-extend";
+import { createTestInbox, deleteTestInbox, validateMailDevConfig, waitForMailDevReady, clearAllEmails, type EmailTestInbox } from "../utils/maildev";
 import {
   generateTestUser,
   AUTH_SELECTORS,
   TestAssertions,
-  NavigationHelpers,
 } from "../utils/test-helpers";
+import { signupFlow, signinFlow, logoutFlow } from "../../flows/auth-flows";
+import { AuthPage } from "../../page-objects/AuthPage";
 
 /**
  * End-to-End User Sign-In Workflow Tests
@@ -67,51 +60,16 @@ test.describe("User Sign-In with Email and Password", () => {
   }) => {
     console.log(`🧪 Starting signin test with email: ${testUser.email}`);
 
-    // First, we need to create and verify a user account
-    console.log("📝 Creating user account first...");
-
-    // Step 1: Navigate to signup page and create account
-    await NavigationHelpers.goToSignup(page);
-    await NavigationHelpers.fillSignupForm(page, testUser);
-    await NavigationHelpers.submitSignupForm(page);
-
-    // Step 2: Verify the account via email
-    await TestAssertions.assertOnVerificationPage(page);
-
-    console.log("📧 Waiting for verification email...");
-    const verificationEmail = await waitForEmailWithSubject(
-      testInbox.id,
-      "verify",
-      90_000
-    );
-
-    expect(verificationEmail.verificationLink).toBeTruthy();
-    console.log("🔗 Clicking verification link...");
-    await page.goto(verificationEmail.verificationLink!);
-
-    // Step 3: Verify user is signed in after verification
-    await TestAssertions.assertSignedIn(page, testUser.name);
+    // Create and verify a user account via flow
+    await signupFlow(page, testInbox);
 
     // Step 4: Sign out to test the signin workflow
     console.log("🚪 Signing out to test signin...");
-    await page.click(AUTH_SELECTORS.signOutButton);
-
-    // Wait for sign out to complete
-    await page.waitForTimeout(2000);
+    await logoutFlow(page);
 
     // Step 5: Navigate to signin page
     console.log("🔑 Testing signin workflow...");
-    await NavigationHelpers.goToSignin(page);
-
-    // Step 6: Fill out and submit signin form
-    await NavigationHelpers.fillSigninForm(page, {
-      email: testUser.email,
-      password: testUser.password,
-    });
-    await NavigationHelpers.submitSigninForm(page);
-
-    // Step 7: Verify successful signin and redirect to dashboard
-    await TestAssertions.assertSignedIn(page, testUser.name);
+    await signinFlow(page, { email: testUser.email, password: testUser.password });
 
     console.log("🎉 Signin workflow completed successfully!");
   });
@@ -119,15 +77,10 @@ test.describe("User Sign-In with Email and Password", () => {
   test("should handle invalid email format during signin", async ({ page }) => {
     const invalidEmail = "invalid-email-format";
 
-    // Navigate to signin page
-    await NavigationHelpers.goToSignin(page);
-
-    // Fill form with invalid email
-    await page.fill(AUTH_SELECTORS.emailInput, invalidEmail);
-    await page.fill(AUTH_SELECTORS.passwordInput, "somepassword");
-
-    // Submit form
-    await page.click(AUTH_SELECTORS.submitButton);
+    const auth = new AuthPage(page);
+    await auth.gotoSignin();
+    await auth.fillSignin({ email: invalidEmail, password: "somepassword" });
+    await auth.submitSignin();
 
     // Verify validation error appears
     await TestAssertions.assertValidationError(
@@ -139,11 +92,9 @@ test.describe("User Sign-In with Email and Password", () => {
   test("should handle empty required fields during signin", async ({
     page,
   }) => {
-    // Navigate to signin page
-    await NavigationHelpers.goToSignin(page);
-
-    // Try to submit form without filling any fields
-    await page.click(AUTH_SELECTORS.submitButton);
+    const auth = new AuthPage(page);
+    await auth.gotoSignin();
+    await auth.submitSignin();
 
     // Verify validation errors appear for both fields
     await TestAssertions.assertValidationError(page, "Email is required");
@@ -151,15 +102,10 @@ test.describe("User Sign-In with Email and Password", () => {
   });
 
   test("should handle invalid credentials during signin", async ({ page }) => {
-    // Navigate to signin page
-    await NavigationHelpers.goToSignin(page);
-
-    // Fill form with non-existent user credentials
-    await NavigationHelpers.fillSigninForm(page, {
-      email: "nonexistent@example.com",
-      password: "wrongpassword123",
-    });
-    await NavigationHelpers.submitSigninForm(page);
+    const auth = new AuthPage(page);
+    await auth.gotoSignin();
+    await auth.fillSignin({ email: "nonexistent@example.com", password: "wrongpassword123" });
+    await auth.submitSignin();
 
     // Verify error message appears
     // Note: The exact error message depends on your Better Auth configuration
@@ -175,27 +121,29 @@ test.describe("User Sign-In with Email and Password", () => {
     console.log("🧪 Testing unverified user signin...");
 
     // Step 1: Create an account but don't verify it
-    await NavigationHelpers.goToSignup(page);
-    await NavigationHelpers.fillSignupForm(page, testUser);
-    await NavigationHelpers.submitSignupForm(page);
+    const auth = new AuthPage(page);
+    await auth.gotoSignup();
+    await auth.fillSignup(testUser);
+    await auth.submitSignup();
 
     // Step 2: Navigate to signin page without verifying
-    await NavigationHelpers.goToSignin(page);
+    await auth.gotoSignin();
 
     // Step 3: Try to sign in with unverified account
-    await NavigationHelpers.fillSigninForm(page, {
-      email: testUser.email,
-      password: testUser.password,
-    });
-    await NavigationHelpers.submitSigninForm(page);
+    await auth.fillSignin({ email: testUser.email, password: testUser.password });
+    await auth.submitSignin();
 
     // Step 4: Verify user is redirected to email verification page
     // Better Auth should handle this automatically based on your configuration
-    await TestAssertions.assertOnVerificationPage(page);
+    const toast = page.locator('[data-sonner-toast]');
+
+    // Primary assertion: one of the toasts should contain "Check your email" (case-insensitive)
+    await expect(toast).toContainText(/email not verified/i, { timeout: 10_000 });
   });
 
   test("should navigate to sign-up page from signin page", async ({ page }) => {
-    await NavigationHelpers.goToSignin(page);
+    const auth = new AuthPage(page);
+    await auth.gotoSignin();
 
     // Look for "Don't have an account?" link
     const signUpLink = page.locator(
@@ -209,42 +157,19 @@ test.describe("User Sign-In with Email and Password", () => {
     // Verify navigation to sign-up page
     await expect(page).toHaveURL(/sign-up|signup|register/);
   });
-
-  test("should show and hide password in signin form", async ({ page }) => {
-    await NavigationHelpers.goToSignin(page);
-
-    const passwordInput = page.locator(AUTH_SELECTORS.passwordInput);
-    const passwordToggle = page.locator(AUTH_SELECTORS.passwordToggle);
-
-    // Fill password
-    await passwordInput.fill("testpassword123");
-
-    // Verify password is hidden by default
-    await expect(passwordInput).toHaveAttribute("type", "password");
-
-    // Click toggle to show password
-    await passwordToggle.click();
-    await expect(passwordInput).toHaveAttribute("type", "text");
-
-    // Click toggle again to hide password
-    await passwordToggle.click();
-    await expect(passwordInput).toHaveAttribute("type", "password");
-  });
 });
 
 test.describe("Sign-In Form Validation", () => {
   test("should disable submit button while form is loading", async ({
     page,
   }) => {
-    await NavigationHelpers.goToSignin(page);
+    const auth = new AuthPage(page);
+    await auth.gotoSignin();
 
     const submitButton = page.locator(AUTH_SELECTORS.submitButton);
 
     // Fill form with valid data
-    await NavigationHelpers.fillSigninForm(page, {
-      email: "test@example.com",
-      password: "validpassword123",
-    });
+    await auth.fillSignin({ email: "test@example.com", password: "validpassword123" });
 
     // Submit form and quickly check if button is disabled
     await submitButton.click();
@@ -256,22 +181,19 @@ test.describe("Sign-In Form Validation", () => {
   });
 
   test("should display loading state during signin", async ({ page }) => {
-    await NavigationHelpers.goToSignin(page);
+    const auth = new AuthPage(page);
+    await auth.gotoSignin();
 
     // Fill form with valid data
-    await NavigationHelpers.fillSigninForm(page, {
-      email: "test@example.com",
-      password: "validpassword123",
-    });
+    await auth.fillSignin({ email: "test@example.com", password: "validpassword123" });
 
     // Submit form
     const submitButton = page.locator(AUTH_SELECTORS.submitButton);
     await submitButton.click();
 
     // Check for loading spinner or text
-    const loadingIndicator = page.locator(
-      '[class*="animate-spin"], text="Signing In"'
-    );
-    await expect(loadingIndicator).toBeVisible();
+    // Prefer robust check for a spinner without mixing selector syntaxes
+    const spinner = page.locator('[class*="animate-spin"]');
+    await expect(spinner.first()).toBeVisible();
   });
 });

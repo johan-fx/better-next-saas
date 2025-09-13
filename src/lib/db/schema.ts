@@ -302,6 +302,32 @@ export const auditLog = pgTable("audit_log", {
 	eventTimezone: text("event_timezone").notNull(),
 });
 
+export const apikey = pgTable("api_key", {
+	id: text("id").primaryKey(),
+	name: text("name"),
+	start: text("start"),
+	prefix: text("prefix"),
+	key: text("key").notNull(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	refillInterval: integer("refill_interval"),
+	refillAmount: integer("refill_amount"),
+	lastRefillAt: timestamp("last_refill_at"),
+	enabled: boolean("enabled").notNull().default(true),
+	rateLimitEnabled: boolean("rate_limit_enabled").notNull().default(false),
+	rateLimitTimeWindow: integer("rate_limit_time_window"),
+	rateLimitMax: integer("rate_limit_max"),
+	requestCount: integer("request_count").notNull().default(0),
+	remaining: integer("remaining"),
+	lastRequest: timestamp("last_request"),
+	expiresAt: timestamp("expires_at"),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+	permissions: text("permissions"),
+	metadata: json("metadata"),
+});
+
 // Export types for type-safe database operations
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
@@ -333,3 +359,7 @@ export type NewTeamMember = typeof teamMember.$inferInsert;
 // Subscription types
 export type Subscription = typeof subscription.$inferSelect;
 export type NewSubscription = typeof subscription.$inferInsert;
+
+// API key types
+export type ApiKey = typeof apikey.$inferSelect;
+export type NewApiKey = typeof apikey.$inferInsert;

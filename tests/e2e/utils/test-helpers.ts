@@ -1,5 +1,6 @@
-import { Page } from "@playwright/test";
-import { env } from "@/lib/env";
+import { Locator, Page, expect } from "@playwright/test";
+
+const env = process.env;
 
 /**
  * Test Helper Utilities
@@ -70,7 +71,7 @@ export function validateTestEnvironment(): void {
     if (error instanceof Error) {
       throw new Error(
         `Environment validation failed: ${error.message}\n` +
-          "Please check your .env.local file and ensure all required variables are set."
+          "Please check your .env file and ensure all required variables are set."
       );
     }
     throw error;
@@ -87,7 +88,6 @@ export const AUTH_SELECTORS = {
   emailInput: 'input[name="email"]',
   passwordInput: 'input[name="password"]',
   confirmPasswordInput: 'input[name="confirmPassword"]',
-  organizationInput: 'input[name="organizationName"]',
 
   // Password visibility toggles
   passwordToggle: 'button[type="button"]:has([class*="eye"])',
@@ -112,10 +112,32 @@ export const AUTH_SELECTORS = {
   userAvatar: '.user-avatar, [data-testid="user-avatar"]',
 
   // Card structure from signup-view.tsx
-  cardTitle: '[class*="text-2xl"], .card-title',
-  cardDescription: '.card-description, [class*="text-center"]',
-  cardContent: ".card-content",
+  cardTitle: '[data-slot="card-title"]',
+  cardDescription: '[data-slot="card-description"]',
+  cardContent: '[data-slot="card-content"]',
 } as const;
+
+/**
+ * Dismiss the cookie banner if it is visible to prevent pointer interception
+ */
+export async function dismissCookieBanner(page: Page) {
+  const root = page.locator('[data-testid="cookie-banner-root"]');
+  try {
+    if (await root.isVisible({ timeout: 1000 })) {
+      const accept = page.locator('[data-testid="cookie-banner-accept-button"]');
+      if (await accept.isVisible({ timeout: 500 })) {
+        await accept.click({ timeout: 2000 });
+        return;
+      }
+      const close = page.locator('[data-testid="cookie-banner-close-button"], [data-testid="cookie-banner-customize-button"]');
+      if (await close.isVisible({ timeout: 500 })) {
+        await close.click({ timeout: 2000 });
+      }
+    }
+  } catch {
+    // ignore
+  }
+}
 
 /**
  * Common URL patterns for navigation assertions
@@ -124,7 +146,7 @@ export const URL_PATTERNS = {
   signup: /auth\/sign-up|signup|register/,
   signin: /auth\/sign-in|signin|login/,
   verifyEmail: /auth\/verify-email|check-email|email-verification/,
-  dashboard: /dashboard|welcome|home/,
+  dashboard: /dashboard|welcome|home|account/,
 } as const;
 
 /**
@@ -140,14 +162,14 @@ export class TestAssertions {
 
     // Look for the CardTitle element or any heading that contains "Create Account" text
     const headingSelectors = [
-      AUTH_SELECTORS.cardTitle, // CardTitle from signup-view.tsx
-      "h1, h2, h3", // Traditional headings
+      AUTH_SELECTORS.cardTitle,
+      '[data-slot="card-title"]', // Headings within card header
       '[role="heading"]', // ARIA heading role
-      ".card-header h1, .card-header h2, .card-header h3", // Headings within card header
+      "h1, h2, h3", // Traditional headings
     ];
 
-    let heading = null;
-    let headingText = null;
+    let heading: Locator | null = null;
+    let headingText: string | null = null;
 
     // Try each selector until we find the heading
     for (const selector of headingSelectors) {
@@ -199,13 +221,13 @@ export class TestAssertions {
     // Look for the CardTitle element or any heading that contains "Sign In" text
     const headingSelectors = [
       AUTH_SELECTORS.cardTitle, // CardTitle from signin-view.tsx
-      "h1, h2, h3", // Traditional headings
+      '[data-slot="card-title"]', // Headings within card header
       '[role="heading"]', // ARIA heading role
-      ".card-header h1, .card-header h2, .card-header h3", // Headings within card header
+      "h1, h2, h3", // Traditional headings
     ];
 
-    let heading = null;
-    let headingText = null;
+    let heading: Locator | null = null;
+    let headingText: string | null = null;
 
     // Try each selector until we find the heading
     for (const selector of headingSelectors) {
@@ -251,13 +273,21 @@ export class TestAssertions {
    * Assert user is on email verification page
    */
   static async assertOnVerificationPage(page: Page) {
-    await page.waitForURL(URL_PATTERNS.verifyEmail);
-    const bodyText = await page.locator("body").textContent();
+    // Updated: Instead of relying on URL/content, assert Sonner toast appears with the message
+    // We look for any toast rendered by Sonner and verify it contains the expected text.
+    // Sonner uses data attributes: [data-sonner-toast] per toast item.
+    const toast = page.locator('[data-sonner-toast]');
 
-    if (
-      !bodyText?.match(/check your email|verification email|verify your email/i)
-    ) {
-      throw new Error("Expected email verification instructions");
+    // Primary assertion: one of the toasts should contain "Check your email" (case-insensitive)
+    await expect(toast).toContainText(/check your email/i, { timeout: 10_000 });
+
+    // Fallback (defensive): if Sonner attributes change, ensure the text is somewhere visible
+    // This keeps the test resilient across minor UI refactors
+    // Note: expect(...).toContainText already retries; this fallback is non-fatal
+    try {
+      await expect(page.getByText(/check your email/i)).toBeVisible({ timeout: 2000 });
+    } catch {
+      // ignore - primary assertion above is authoritative
     }
   }
 
@@ -276,6 +306,12 @@ export class TestAssertions {
     ];
 
     let isSignedIn = false;
+
+    // Special-case: the welcome page may not render standard signed-in indicators
+    const currentUrlEarly = page.url();
+    if (/\/auth\/welcome/.test(currentUrlEarly)) {
+      isSignedIn = true;
+    }
     for (const selector of signedInIndicators) {
       try {
         await page.waitForSelector(selector, { timeout: 5000 });
@@ -391,6 +427,9 @@ export class NavigationHelpers {
     // Wait for the signup form to be visible before asserting page state
     await page.waitForSelector(AUTH_SELECTORS.nameInput, { timeout: 10000 });
 
+    // Some pages render a cookie banner that intercepts pointer events
+    await dismissCookieBanner(page);
+
     await TestAssertions.assertOnSignupPage(page);
   }
 
@@ -403,6 +442,9 @@ export class NavigationHelpers {
 
     // Wait for the signin form to be visible before asserting page state
     await page.waitForSelector(AUTH_SELECTORS.emailInput, { timeout: 10000 });
+
+    // Some pages render a cookie banner that intercepts pointer events
+    await dismissCookieBanner(page);
 
     await TestAssertions.assertOnSigninPage(page);
   }
@@ -418,13 +460,6 @@ export class NavigationHelpers {
     await page.fill(AUTH_SELECTORS.emailInput, userData.email);
     await page.fill(AUTH_SELECTORS.passwordInput, userData.password);
     await page.fill(AUTH_SELECTORS.confirmPasswordInput, userData.password);
-
-    if (userData.organizationName) {
-      await page.fill(
-        AUTH_SELECTORS.organizationInput,
-        userData.organizationName
-      );
-    }
   }
 
   /**

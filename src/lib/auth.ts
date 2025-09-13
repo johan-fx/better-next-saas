@@ -1,7 +1,7 @@
 import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, organization } from "better-auth/plugins";
+import { admin, apiKey, organization } from "better-auth/plugins";
 import slugify from "slugify";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/constants";
 import { getDefaultOrganization } from "@/modules/auth/server/utils";
@@ -111,6 +111,17 @@ export const auth = betterAuth({
 			impersonationSessionDuration: 60 * 60 * 24 * 7, // 7 days
 		}),
 
+		// API Key plugin to enable server-side API key issuance & verification
+		// This allows external clients (e.g., our Figma plugin) to authenticate via `x-api-key`
+		// and automatically receive a mocked session in Better Auth for downstream authz.
+		apiKey({
+			rateLimit: {
+				enabled: true,
+				timeWindow: 1000 * 60 * 1, // 1 minute
+				maxRequests: 100, // 100 requests per window
+			},
+		}),
+
 		organization({
 			// Teams configuration
 			teams: {
@@ -136,7 +147,7 @@ export const auth = betterAuth({
 			// Invitation email configuration
 			sendInvitationEmail: async (data, request) => {
 				// Build the invitation link
-				const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/accept-invitation/${data.id}`;
+				const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?invitationId=${data.id}`;
 				const { name, email, language } = data.inviter.user as schema.User;
 
 				// Send the invitation email using the new template

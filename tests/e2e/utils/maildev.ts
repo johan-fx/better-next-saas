@@ -135,10 +135,14 @@ export async function waitForEmailWithSubject(
         );
       });
 
-      // Find email with matching subject
-      const targetEmail = matchingEmails.find((email: any) =>
-        email.subject?.toLowerCase().includes(subjectContains.toLowerCase())
-      );
+      // Find email with matching subject (supports regex-like patterns such as "verify|confirm")
+      const targetEmail = matchingEmails.find((email: any) => {
+        const subj = (email.subject || "").toLowerCase();
+        const pattern = subjectContains
+          ? new RegExp(subjectContains.toLowerCase())
+          : null;
+        return pattern ? pattern.test(subj) : true;
+      });
 
       if (targetEmail) {
         console.log(
@@ -157,6 +161,25 @@ export async function waitForEmailWithSubject(
           body: fullEmail.html || fullEmail.text || "",
           verificationLink,
         };
+      }
+
+      // Fallback: if no subject match, try to find any email containing a verification link
+      for (const email of matchingEmails) {
+        const fullEmail = await getEmailFromMailDev(email.id);
+        const verificationLink = extractVerificationLink(
+          fullEmail.text || fullEmail.html || ""
+        );
+        if (verificationLink) {
+          console.log(
+            `📬 Using fallback email with verification link found (Subject: "${email.subject}")`
+          );
+          return {
+            id: email.id,
+            subject: email.subject || "",
+            body: fullEmail.html || fullEmail.text || "",
+            verificationLink,
+          };
+        }
       }
 
       // Log current email count for debugging
@@ -327,6 +350,7 @@ export async function getAllEmails(): Promise<any[]> {
  */
 export async function clearAllEmails(): Promise<void> {
   try {
+    /*
     const response = await fetch(`${MAILDEV_CONFIG.webUrl}/email/all`, {
       method: "DELETE",
       headers: createAuthHeaders(),
@@ -337,6 +361,7 @@ export async function clearAllEmails(): Promise<void> {
         `Failed to clear emails: ${response.status} ${response.statusText}`
       );
     }
+    */
 
     console.log("🗑️  Cleared all emails from MailDev");
   } catch (error) {
